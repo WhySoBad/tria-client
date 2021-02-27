@@ -1,14 +1,14 @@
 import { Chat, Group, PrivateChat, PrivateGroup } from '.';
 import * as requests from '../requests/ClientUser.requests';
 import { ChatConstructor, ChatType, ClientUserConstructor, Locale } from '../types';
-import { BaseClient } from './client';
+import { Client } from './client';
 
 export class ClientUser {
   /**
    * Client which initialized the ClientUser
    */
 
-  public readonly client: BaseClient;
+  public readonly client: Client;
 
   /**
    * Uuid of the user
@@ -40,7 +40,7 @@ export class ClientUser {
 
   private _chats: Map<string, Chat> = new Map<string, Chat>();
 
-  constructor({ client, props }: ClientUserConstructor) {
+  constructor(client: Client, props: ClientUserConstructor) {
     this.client = client;
     this.uuid = props.uuid;
     this._name = props.name;
@@ -53,9 +53,10 @@ export class ClientUser {
     this._locale = props.locale as Locale;
     this._avatar = props.avatar;
     props.chats.forEach((chat: ChatConstructor) => {
-      if (chat.type == ChatType.GROUP) this._chats.set(chat.uuid, new Group(chat));
-      else if (chat.type == ChatType.PRIVATE) this._chats.set(chat.uuid, new PrivateChat(chat));
-      else this._chats.set(chat.uuid, new PrivateGroup(chat));
+      if (chat.type == ChatType.GROUP) this._chats.set(chat.uuid, new Group(this.client, chat));
+      else if (chat.type == ChatType.PRIVATE) {
+        this._chats.set(chat.uuid, new PrivateChat(this.client, chat));
+      } else this._chats.set(chat.uuid, new PrivateGroup(this.client, chat));
     });
   }
 

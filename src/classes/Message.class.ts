@@ -1,8 +1,21 @@
 import { Chat } from '.';
 import * as requests from '../requests/Message.requests';
-import { MessageContstructor } from '../types/Message.types';
+import { ClientEvent, MessageContstructor } from '../types';
+import { Client } from './client';
+
+/**
+ * Message instance
+ *
+ * @see documentation reference
+ */
 
 export class Message {
+  /**
+   * Current client
+   */
+
+  public readonly client: Client;
+
   /**
    * Uuid of the message
    */
@@ -28,11 +41,15 @@ export class Message {
   public readonly user: string;
 
   private _editedAt: Date | null;
+
   private _edited: number;
+
   private _text: string;
+
   private _pinned: boolean;
 
-  constructor(props: MessageContstructor) {
+  constructor(client: Client, props: MessageContstructor) {
+    this.client = client;
     this.uuid = props.uuid;
     this.chat = props.chat;
     this.createdAt = props.createdAt;
@@ -84,7 +101,7 @@ export class Message {
    */
 
   public get editable(): boolean {
-    return false;
+    return this.user == this.client.user.uuid;
   }
 
   /**
@@ -96,34 +113,66 @@ export class Message {
    */
 
   public get pinnable(): boolean {
+    //TODO: Admins and permissions -> check for existing "pin" permission
     return false;
   }
 
   /**
    * Edit the text of the message
+   *
    * @param text new text of the message
+   *
    * @returns Promise<void>
    */
 
   public setText(text: string): Promise<void> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+      if (!this.editable) reject('User Is Not Allowed To Edit');
+      this.client.emit(ClientEvent.MESSAGE_EDIT, { message: this.uuid, text: text } as any);
+      this.client.once(ClientEvent.MESSAGE_EDIT, (message) => {
+        if (message.message == this.uuid) {
+          this._text = message.text;
+          resolve();
+        }
+      });
+    });
   }
 
   /**
    * Pin the message
+   *
    * @returns Promise<void>
    */
 
   public pin(): Promise<void> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+      if (this._pinned) reject('Message Is Already Pinned');
+      this.client.emit(ClientEvent.MESSAGE_EDIT, { message: this.uuid, pinned: true } as any);
+      this.client.once(ClientEvent.MESSAGE_EDIT, (message) => {
+        if (message.message == this.uuid) {
+          this._pinned = message.pinned;
+          resolve();
+        }
+      });
+    });
   }
 
   /**
    * Unpin the message
+   *
    * @returns Promise<void>
    */
 
   public unpin(): Promise<void> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+      if (!this._pinned) reject('Message Is Not Pinned');
+      this.client.emit(ClientEvent.MESSAGE_EDIT, { message: this.uuid, pinned: false } as any);
+      this.client.once(ClientEvent.MESSAGE_EDIT, (message) => {
+        if (message.message == this.uuid) {
+          this._pinned = message.pinned;
+          resolve();
+        }
+      });
+    });
   }
 }

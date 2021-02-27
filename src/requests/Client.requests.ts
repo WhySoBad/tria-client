@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { config } from '../config';
-import { ClientUserProps, Credentials } from '../types';
+import { ClientUserConstructor, Credentials } from '../types';
 
 const { url } = config;
 
@@ -36,7 +36,7 @@ export const logout = (token: string): Promise<void> => {
   });
 };
 
-export const get = (token: string): Promise<ClientUserProps> => {
+export const get = (token: string): Promise<ClientUserConstructor> => {
   return new Promise((resolve, reject) => {
     axios
       .get(`${url}/user/get`, { headers: { Authorization: `Bearer ${token}` } })

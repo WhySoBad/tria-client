@@ -11,10 +11,10 @@ export interface MessageEdit {
   pinned?: boolean;
 }
 
-export const edit = (token: string, params: MessageEdit): Promise<void> => {
+export const get = (token: string, params: MessageEdit): Promise<void> => {
   return new Promise((resolve, reject) => {
     axios
-      .post(`${url}/user/edit`, params, { headers: { Authorization: `Bearer ${token}` } })
+      .post(`${url}/user/get`, params, { headers: { Authorization: `Bearer ${token}` } })
       .then(() => resolve())
       .catch(({ response }) => reject(response?.data?.message));
   });

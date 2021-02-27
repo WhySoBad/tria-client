@@ -1,6 +1,5 @@
 import { Member, Message } from '../classes';
-import { BaseSocketConstructor, SocketEvents } from './BaseSocket.types';
-import { ChatRole } from '.';
+import { BaseSocketConstructor, SocketEvents, ChatRole } from '.';
 
 export interface ChatSocketConstructor extends BaseSocketConstructor {}
 
@@ -9,7 +8,14 @@ export interface ChatSocketEvents extends SocketEvents {
 
   CHAT_EDIT: (chat: string) => void;
 
-  MESSAGE_EDIT: (message: string) => void;
+  MESSAGE_EDIT: (message: {
+    chat: string;
+    message: string;
+    text: string;
+    pinned: boolean;
+    edited: number;
+    editedAt: Date;
+  }) => void;
 
   MEMBER_EDIT: (
     chat: string,

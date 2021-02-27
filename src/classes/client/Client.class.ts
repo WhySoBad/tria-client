@@ -1,5 +1,4 @@
 import { ClientConstructor } from '../../types';
-import * as requests from '../../requests/Client.requests';
 import { Logger } from '..';
 import { BaseClient } from './BaseClient.class';
 
@@ -18,6 +17,7 @@ export class Client extends BaseClient {
 
   constructor(props: ClientConstructor) {
     super(props.credentials || props.token || '');
+    this._client = this;
     this.logger = !!props.log;
     this.logger && Logger.Info('Client initialized');
   }

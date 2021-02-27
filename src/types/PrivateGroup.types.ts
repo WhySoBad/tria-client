@@ -1,3 +1,3 @@
-import { ChatConstructor } from './Chat.types';
+import { ChatConstructor } from '.';
 
 export interface PrivateGroupConstructor extends ChatConstructor {}

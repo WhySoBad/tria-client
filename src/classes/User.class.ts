@@ -1,4 +1,4 @@
-import { UserConstructor } from '../types/User.types';
+import { UserConstructor } from '../types';
 
 export class User {
   /**

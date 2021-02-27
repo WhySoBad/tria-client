@@ -1,4 +1,4 @@
-import { ChatSocketEvents } from './ChatSocket.types';
+import { ChatSocketEvents } from '.';
 
 export interface Credentials {
   username: string;

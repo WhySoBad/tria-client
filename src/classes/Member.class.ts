@@ -1,5 +1,5 @@
-import { ChatRole, MemberConstructor } from '../types/Member.types';
-import { User } from './User.class';
+import { ChatRole, MemberConstructor } from '../types';
+import { User } from '.';
 
 export class Member {
   /**

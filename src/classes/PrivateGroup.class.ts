@@ -1,8 +1,9 @@
-import { Chat } from './Chat.class';
-import { PrivateGroupConstructor } from '../types/PrivateGroup.types';
+import { Chat } from '.';
+import { PrivateGroupConstructor } from '../types';
+import { Client } from './client';
 
 export class PrivateGroup extends Chat {
-  constructor(props: PrivateGroupConstructor) {
-    super(props);
+  constructor(client: Client, props: PrivateGroupConstructor) {
+    super(client, props);
   }
 }

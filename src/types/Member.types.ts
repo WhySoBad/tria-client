@@ -1,4 +1,4 @@
-import { UserConstructor } from './User.types';
+import { UserConstructor } from '.';
 
 export enum ChatRole {
   OWNER = 0,

@@ -1,7 +1,14 @@
 import { Message, Member } from '.';
-import { ChatConstructor, ChatType } from '../types/Chat.types';
+import { ChatConstructor, ChatType } from '../types';
+import { Client } from './client';
 
 export abstract class Chat {
+  /**
+   * Current client
+   */
+
+  public readonly client: Client;
+
   /**
    * Uuid of the chat
    */
@@ -26,9 +33,12 @@ export abstract class Chat {
 
   public messages: Map<string, Message> = new Map<string, Message>();
 
-  constructor(props: ChatConstructor) {
+  constructor(client: Client, props: ChatConstructor) {
+    this.client = client;
     this.uuid = props.uuid;
     props.members.forEach((member) => this.members.set(member.user.uuid, new Member(member)));
-    props.messages.forEach((message) => this.messages.set(message.uuid, new Message(message)));
+    props.messages.forEach((message) => {
+      this.messages.set(message.uuid, new Message(this.client, message));
+    });
   }
 }

@@ -1,13 +1,14 @@
 import { Chat } from '.';
 import { GroupConstructor } from '../types';
+import { Client } from './client';
 
 export class Group extends Chat {
   private _name: string;
   private _tag: string;
   private _description: string;
 
-  constructor(props: GroupConstructor) {
-    super(props);
+  constructor(client: Client, props: GroupConstructor) {
+    super(client, props);
     this._name = props.name as any;
     this._tag = props.tag as any;
     this._description = props.description as any;

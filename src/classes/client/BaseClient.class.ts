@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import TypedEventEmitter from 'typed-emitter';
 import { config } from '../../config';
-import { ClientEvent, ClientEvents, ClientUserProps, Credentials } from '../../types';
+import { ClientEvent, ClientEvents, ClientUserConstructor, Credentials } from '../../types';
 import { Member } from '../Member.class';
 import { Message } from '../Message.class';
 import { ChatSocket } from '../websocket';
@@ -9,6 +9,16 @@ import * as requests from '../../requests/Client.requests';
 import { BaseSocket } from '../websocket/BaseSocket.class';
 import { Logger } from '../Logger.class';
 import { ClientUser } from '../ClientUser.class';
+import { Client } from './Client.class';
+
+/**
+ * Base for the client class
+ *
+ * Used for big methods to keep the Client class small
+ *
+ * @see documentation reference
+ *
+ */
 
 export abstract class BaseClient extends (EventEmitter as new () => TypedEventEmitter<ClientEvents>) {
   /**
@@ -20,6 +30,8 @@ export abstract class BaseClient extends (EventEmitter as new () => TypedEventEm
    */
 
   public readonly credentials: Credentials;
+
+  protected _client: Client;
 
   private _user: ClientUser;
 
@@ -41,11 +53,11 @@ export abstract class BaseClient extends (EventEmitter as new () => TypedEventEm
 
   private sockets: Array<BaseSocket> = [];
 
-  constructor(login: string | Credentials) {
+  constructor(auth: string | Credentials) {
     super();
-    if (!login) throw new Error('No Arguments Provided');
-    if (typeof login == 'string') this._token = login;
-    else this.credentials = login;
+    if (!auth) throw new Error('No Arguments Provided');
+    if (typeof auth == 'string') this._token = auth;
+    else this.credentials = auth;
   }
 
   /**
@@ -85,7 +97,7 @@ export abstract class BaseClient extends (EventEmitter as new () => TypedEventEm
           this.emit(ClientEvent.CHAT_EDIT, chat);
         });
 
-        chat.on(ClientEvent.MESSAGE_EDIT, (message: string) => {
+        chat.on(ClientEvent.MESSAGE_EDIT, (message: any) => {
           this.emit(ClientEvent.MESSAGE_EDIT, message);
         });
 
@@ -197,7 +209,7 @@ export abstract class BaseClient extends (EventEmitter as new () => TypedEventEm
     return new Promise((resolve, reject) => {
       requests
         .get(this.token)
-        .then((data: ClientUserProps) => resolve(new ClientUser({ client: this, props: data })))
+        .then((data: ClientUserConstructor) => resolve(new ClientUser(this._client, data)))
         .catch(reject);
     });
   }
@@ -250,6 +262,10 @@ export abstract class BaseClient extends (EventEmitter as new () => TypedEventEm
 
   protected setConnected(state: boolean): void {
     this._connected = state;
+  }
+
+  public get client(): Client {
+    return this._client;
   }
 
   public get user(): ClientUser {
