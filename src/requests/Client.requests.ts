@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { ClientUserProps } from '../ClientUser';
 import { config } from '../config';
-import { Credentials } from './Client.types';
+import { ClientUserProps, Credentials } from '../types';
 
 const { url } = config;
 

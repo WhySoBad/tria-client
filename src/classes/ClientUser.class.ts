@@ -1,56 +1,66 @@
-import { Chat } from '../Chat';
-import { Client } from '../Client/Client.class';
-import { ClientUserConstructor } from './ClientUser.types';
-import * as requests from './ClientUser.requests';
-import { ChatMemberProps, Locale } from '../Member';
+import { Chat, Group, PrivateChat, PrivateGroup } from '.';
+import * as requests from '../requests/ClientUser.requests';
+import { ChatConstructor, ChatType, ClientUserConstructor, Locale } from '../types';
+import { BaseClient } from './client';
 
 export class ClientUser {
   /**
    * Client which initialized the ClientUser
    */
 
-  public readonly client: Client;
+  public readonly client: BaseClient;
 
-  private _uuid: string;
+  /**
+   * Uuid of the user
+   */
+
+  public readonly uuid: string;
+
+  /**
+   * Date when the user was created
+   */
+
+  public readonly createdAt: Date;
+
   private _name: string;
+
   private _tag: string;
+
   private _description: string;
+
   private _mail: string;
-  private _createdAt: Date;
+
   private _lastSeen: Date;
+
   private _online: boolean;
+
   private _locale: Locale;
+
   private _avatar: string;
+
   private _chats: Map<string, Chat> = new Map<string, Chat>();
 
   constructor({ client, props }: ClientUserConstructor) {
     this.client = client;
-
-    this._uuid = props.uuid;
+    this.uuid = props.uuid;
     this._name = props.name;
     this._tag = props.tag;
     this._description = props.description;
     this._mail = props.mail;
-    this._createdAt = props.createdAt;
+    this.createdAt = props.createdAt;
     this._lastSeen = props.lastSeen;
     this._online = props.online;
     this._locale = props.locale as Locale;
     this._avatar = props.avatar;
-    props.chats.forEach((member: ChatMemberProps) => this._chats.set(member.chatUuid, member));
-  }
-
-  /**
-   * Uuid of the user
-   * @returns string
-   */
-
-  public get uuid(): string {
-    return this._uuid;
+    props.chats.forEach((chat: ChatConstructor) => {
+      if (chat.type == ChatType.GROUP) this._chats.set(chat.uuid, new Group(chat));
+      else if (chat.type == ChatType.PRIVATE) this._chats.set(chat.uuid, new PrivateChat(chat));
+      else this._chats.set(chat.uuid, new PrivateGroup(chat));
+    });
   }
 
   /**
    * Username of the user
-   * @returns string
    */
 
   public get name(): string {
@@ -59,7 +69,6 @@ export class ClientUser {
 
   /**
    * Unique tag of the user
-   * @returns string
    */
 
   public get tag(): string {
@@ -68,7 +77,6 @@ export class ClientUser {
 
   /**
    * Description of the user
-   * @returns string
    */
 
   public get description(): string {
@@ -77,7 +85,6 @@ export class ClientUser {
 
   /**
    * Mail address of the user
-   * @retruns string
    */
 
   public get mail(): string {
@@ -85,17 +92,7 @@ export class ClientUser {
   }
 
   /**
-   * Date when the user was created
-   * @returns Date
-   */
-
-  public get createdAt(): Date {
-    return this._createdAt;
-  }
-
-  /**
    * Date when the user was connected with a websocket for the last time
-   * @returns Date
    */
 
   public get lastSeen(): Date {
@@ -104,7 +101,6 @@ export class ClientUser {
 
   /**
    * Boolean whether the user is online or not
-   * @returns boolean
    */
 
   public get online(): boolean {
@@ -113,7 +109,6 @@ export class ClientUser {
 
   /**
    * Locale of the user
-   * @returns string
    */
 
   public get locale(): string {
@@ -122,7 +117,6 @@ export class ClientUser {
 
   /**
    * Avatar of the user
-   * @returns string
    */
 
   public get avatar(): string {
@@ -131,7 +125,6 @@ export class ClientUser {
 
   /**
    * Chats of the user
-   * @returns Map<string, Chat>
    */
 
   public get chats(): Map<string, Chat> {
@@ -140,6 +133,7 @@ export class ClientUser {
 
   /**
    * Edit the username of the user
+   *
    * @returns Promise<void>
    */
 
@@ -158,6 +152,7 @@ export class ClientUser {
 
   /**
    * Edit the tag of the user
+   *
    * @returns Promise<void>
    */
 
@@ -176,6 +171,7 @@ export class ClientUser {
 
   /**
    * Edit the description of the user
+   *
    * @returns Promise<void>
    */
 
@@ -194,6 +190,7 @@ export class ClientUser {
 
   /**
    * Edit the locale of the user
+   *
    * @returns Promise<void>
    */
 
@@ -212,6 +209,7 @@ export class ClientUser {
 
   /**
    * Edit the avatar of the user
+   *
    * @returns Promise<void>
    */
 

@@ -1,4 +1,2 @@
-export * from './Chat';
-export * from './Client';
-export * from './Member';
-export * from './Message';
+export * from './types';
+export * from './classes';

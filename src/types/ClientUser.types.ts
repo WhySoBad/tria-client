@@ -1,5 +1,6 @@
-import { Client } from '../Client/Client.class';
-import { ChatMemberProps } from '../Member';
+import { BaseClient } from '../classes';
+import { Client } from '../classes/client/Client.class';
+import { ChatConstructor } from './Chat.types';
 
 export interface ClientUserProps {
   uuid: string;
@@ -12,10 +13,10 @@ export interface ClientUserProps {
   avatar: string;
   locale: string;
   online: boolean;
-  chats: Array<ChatMemberProps>;
+  chats: Array<ChatConstructor>;
 }
 
 export interface ClientUserConstructor {
-  client: Client;
+  client: BaseClient;
   props: ClientUserProps;
 }
