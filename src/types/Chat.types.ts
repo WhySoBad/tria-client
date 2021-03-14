@@ -15,3 +15,11 @@ export interface ChatConstructor {
   members: Array<MemberConstructor>;
   messages: Array<MessageContstructor>;
 }
+
+export interface ChatEdit {
+  uuid: string;
+  type: ChatType;
+  name: string | null;
+  tag: string | null;
+  description: string | null;
+}

@@ -1,6 +1,5 @@
-import { Chat } from '.';
 import * as requests from '../requests/Message.requests';
-import { ClientEvent, MessageContstructor } from '../types';
+import { ChatSocketEvent, ClientEvent, MessageContstructor, MessageEdit } from '../types';
 import { Client } from './client';
 
 /**
@@ -26,7 +25,7 @@ export class Message {
    * Uuid of the chat the message is in
    */
 
-  public readonly chat: Chat;
+  public readonly chat: string;
 
   /**
    * Date when the message was created
@@ -128,13 +127,18 @@ export class Message {
   public setText(text: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.editable) reject('User Is Not Allowed To Edit');
-      this.client.emit(ClientEvent.MESSAGE_EDIT, { message: this.uuid, text: text } as any);
-      this.client.once(ClientEvent.MESSAGE_EDIT, (message) => {
-        if (message.message == this.uuid) {
+      this.client.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
+        message: this.uuid,
+        text: text,
+      });
+      const handler: (message: MessageEdit) => void = (message) => {
+        if (message.uuid == this.uuid && this._text != message.text) {
           this._text = message.text;
+          this.client.removeListener(ChatSocketEvent.MESSAGE_EDIT, handler);
           resolve();
         }
-      });
+      };
+      this.client.on(ChatSocketEvent.MESSAGE_EDIT, handler);
     });
   }
 
@@ -147,13 +151,18 @@ export class Message {
   public pin(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this._pinned) reject('Message Is Already Pinned');
-      this.client.emit(ClientEvent.MESSAGE_EDIT, { message: this.uuid, pinned: true } as any);
-      this.client.once(ClientEvent.MESSAGE_EDIT, (message) => {
-        if (message.message == this.uuid) {
-          this._pinned = message.pinned;
+      this.client.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
+        message: this.uuid,
+        pinned: true,
+      });
+      const handler: (message: MessageEdit) => void = (message) => {
+        if (message.uuid == this.uuid && !this._pinned) {
+          this._pinned = true;
+          this.client.removeListener(ChatSocketEvent.MESSAGE_EDIT, handler);
           resolve();
         }
-      });
+      };
+      this.client.on(ChatSocketEvent.MESSAGE_EDIT, handler);
     });
   }
 
@@ -166,13 +175,18 @@ export class Message {
   public unpin(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this._pinned) reject('Message Is Not Pinned');
-      this.client.emit(ClientEvent.MESSAGE_EDIT, { message: this.uuid, pinned: false } as any);
-      this.client.once(ClientEvent.MESSAGE_EDIT, (message) => {
-        if (message.message == this.uuid) {
-          this._pinned = message.pinned;
+      this.client.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
+        message: this.uuid,
+        pinned: false,
+      });
+      const handler: (message: MessageEdit) => void = (message) => {
+        if (message.uuid == this.uuid && this._pinned) {
+          this._pinned = false;
+          this.client.removeListener(ChatSocketEvent.MESSAGE_EDIT, handler);
           resolve();
         }
-      });
+      };
+      this.client.on(ChatSocketEvent.MESSAGE_EDIT, handler);
     });
   }
 }

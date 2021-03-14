@@ -1,15 +1,10 @@
-import { EventEmitter } from 'events';
-import TypedEventEmitter from 'typed-emitter';
-import { config } from '../../config';
-import { ClientEvent, ClientEvents, ClientUserConstructor, Credentials } from '../../types';
-import { Member } from '../Member.class';
-import { Message } from '../Message.class';
-import { ChatSocket } from '../websocket';
+import { ClientEvent, ClientUserConstructor, Credentials } from '../../types';
 import * as requests from '../../requests/Client.requests';
 import { BaseSocket } from '../websocket/BaseSocket.class';
 import { Logger } from '../Logger.class';
 import { ClientUser } from '../ClientUser.class';
 import { Client } from './Client.class';
+import { SocketHandler } from '../websocket/SocketHandler.class';
 
 /**
  * Base for the client class
@@ -20,7 +15,7 @@ import { Client } from './Client.class';
  *
  */
 
-export abstract class BaseClient extends (EventEmitter as new () => TypedEventEmitter<ClientEvents>) {
+export abstract class BaseClient extends SocketHandler {
   /**
    * Credentials of the user
    *
@@ -51,7 +46,7 @@ export abstract class BaseClient extends (EventEmitter as new () => TypedEventEm
    * Array with all connected sockets
    */
 
-  private sockets: Array<BaseSocket> = [];
+  protected sockets: Array<BaseSocket> = [];
 
   constructor(auth: string | Credentials) {
     super();
@@ -75,49 +70,7 @@ export abstract class BaseClient extends (EventEmitter as new () => TypedEventEm
         else await this.validate().catch(reject);
       }
       if (!this._validated) reject('Invalid Token');
-      const chat: ChatSocket = new ChatSocket({
-        token: this._token,
-        url: config.url,
-      });
-      this.sockets.push(chat);
-      await chat.connect().then(() => {
-        this.emit(ClientEvent.CONNECT);
-
-        chat.on(ClientEvent.CONNECT, () => this.emit(ClientEvent.CONNECT));
-
-        chat.on(ClientEvent.DISCONNECT, () => this.emit(ClientEvent.DISCONNECT));
-
-        chat.on(ClientEvent.ERROR, (error: any) => this.emit(ClientEvent.ERROR, error));
-
-        chat.on(ClientEvent.MESSAGE, (message: Message) => {
-          this.emit(ClientEvent.MESSAGE, message);
-        });
-
-        chat.on(ClientEvent.CHAT_EDIT, (chat: string) => {
-          this.emit(ClientEvent.CHAT_EDIT, chat);
-        });
-
-        chat.on(ClientEvent.MESSAGE_EDIT, (message: any) => {
-          this.emit(ClientEvent.MESSAGE_EDIT, message);
-        });
-
-        chat.on(ClientEvent.MEMBER_EDIT, (chat: string, member: any) => {
-          this.emit(ClientEvent.MEMBER_EDIT, chat, member);
-        });
-
-        chat.on(ClientEvent.CHAT_DELETE, (chat: string) => {
-          this.emit(ClientEvent.CHAT_DELETE, chat);
-        });
-
-        chat.on(ClientEvent.MEMBER_JOIN, (chat: string, member: Member) => {
-          this.emit(ClientEvent.MEMBER_JOIN, chat, member);
-        });
-
-        chat.on(ClientEvent.MEMBER_LEAVE, (chat: string, member: string) => {
-          this.emit(ClientEvent.MEMBER_LEAVE, chat, member);
-        });
-      });
-
+      await this.connectSockets(this._token).catch(reject);
       this.fetchUser()
         .then((user: ClientUser) => {
           this._user = user;

@@ -1,16 +1,17 @@
 import { Member, Message } from '../classes';
 import { BaseSocketConstructor, SocketEvents, ChatRole } from '.';
+import { ChatEdit } from './Chat.types';
 
 export interface ChatSocketConstructor extends BaseSocketConstructor {}
 
 export interface ChatSocketEvents extends SocketEvents {
   MESSAGE: (message: Message) => void;
 
-  CHAT_EDIT: (chat: string) => void;
+  CHAT_EDIT: (chat: ChatEdit) => void;
 
   MESSAGE_EDIT: (message: {
     chat: string;
-    message: string;
+    uuid: string;
     text: string;
     pinned: boolean;
     edited: number;
@@ -31,6 +32,8 @@ export interface ChatSocketEvents extends SocketEvents {
   MEMBER_JOIN: (chat: string, member: Member) => void;
 
   MEMBER_LEAVE: (chat: string, member: string) => void;
+
+  MEMBER_BANNED: (chat: string, member: string) => void;
 }
 
 export enum ChatSocketEvent {
@@ -41,4 +44,5 @@ export enum ChatSocketEvent {
   CHAT_DELETE = 'CHAT_DELETE',
   MEMBER_JOIN = 'MEMBER_JOIN',
   MEMBER_LEAVE = 'MEMBER_LEAVE',
+  MEMBER_BANNED = 'MEMBER_BANNED',
 }
