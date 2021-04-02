@@ -1,5 +1,4 @@
 import { ClientConstructor } from '../../types';
-import { Logger } from '..';
 import { BaseClient } from './BaseClient.class';
 
 /**
@@ -7,18 +6,15 @@ import { BaseClient } from './BaseClient.class';
  */
 
 export class Client extends BaseClient {
-  private logger: boolean;
-
   /**
    * Initialize new user client
    *
    * @param constructor ClientConstructor
    */
 
-  constructor(props: ClientConstructor) {
-    super(props.credentials || props.token || '');
+  constructor({ credentials, log, token }: ClientConstructor) {
+    if (!token && !credentials) throw new Error('Missing token or credentials');
+    super(credentials || token || '', !!log);
     this._client = this;
-    this.logger = !!props.log;
-    this.logger && Logger.Info('Client initialized');
   }
 }

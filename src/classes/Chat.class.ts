@@ -1,5 +1,11 @@
 import { Message, Member } from '.';
-import { ChatConstructor, ChatSocketEvent, ChatType } from '../types';
+import {
+  ChatConstructor,
+  ChatSocketEvent,
+  ChatType,
+  MemberConstructor,
+  MessageContstructor,
+} from '../types';
 import { Admin } from './Admin.class';
 import { Client } from './client';
 
@@ -26,11 +32,13 @@ export abstract class Chat {
 
   private _messages: Map<string, Message> = new Map<string, Message>();
 
-  constructor(client: Client, props: ChatConstructor) {
+  constructor(client: Client, { uuid, members, messages }: ChatConstructor) {
     this.client = client;
-    this.uuid = props.uuid;
-    props.members.forEach((member) => this._members.set(member.user.uuid, new Member(member)));
-    props.messages.forEach((message) => {
+    this.uuid = uuid;
+    members.forEach((member: MemberConstructor) => {
+      this._members.set(member.user.uuid, new Member(member));
+    });
+    messages.forEach((message: MessageContstructor) => {
       this._messages.set(message.uuid, new Message(this.client, message));
     });
   }

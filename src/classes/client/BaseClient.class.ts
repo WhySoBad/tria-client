@@ -1,4 +1,10 @@
-import { ClientEvent, ClientUserConstructor, Credentials } from '../../types';
+import {
+  ClientEvent,
+  ClientUserConstructor,
+  Credentials,
+  GroupProps,
+  SocketEvent,
+} from '../../types';
 import * as requests from '../../requests/Client.requests';
 import { BaseSocket } from '../websocket/BaseSocket.class';
 import { Logger } from '../Logger.class';
@@ -48,11 +54,13 @@ export abstract class BaseClient extends SocketHandler {
 
   protected sockets: Array<BaseSocket> = [];
 
-  constructor(auth: string | Credentials) {
-    super();
+  constructor(auth: string | Credentials, logging: boolean) {
+    super(logging);
     if (!auth) throw new Error('No Arguments Provided');
     if (typeof auth == 'string') this._token = auth;
     else this.credentials = auth;
+    this.logging && Logger.Info('Client initialized');
+    this.on(SocketEvent.ERROR, (error: any) => this.logging && Logger.Error(error));
   }
 
   /**
@@ -64,20 +72,32 @@ export abstract class BaseClient extends SocketHandler {
    */
 
   public connect(): Promise<void> {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      const handle: () => void = () => {
+        if (!this._validated) return reject('Invalid Token');
+        this.connectSockets(this._token)
+          .catch((error: any) => {
+            console.log('unable to connect sockets');
+            reject(error);
+            return;
+          })
+          .then(() => {
+            this.fetchUser()
+              .then((user: ClientUser) => {
+                this._user = user;
+                this.emit(ClientEvent.READY);
+                resolve();
+              })
+              .catch(reject);
+          });
+      };
       if (!this._validated) {
-        if (this.credentials) await this.login().catch(reject);
-        else await this.validate().catch(reject);
-      }
-      if (!this._validated) reject('Invalid Token');
-      await this.connectSockets(this._token).catch(reject);
-      this.fetchUser()
-        .then((user: ClientUser) => {
-          this._user = user;
-          this.emit(ClientEvent.READY);
-          resolve();
-        })
-        .catch(reject);
+        if (this.credentials)
+          this.login()
+            .then(handle)
+            .catch((reject) => console.log(reject));
+        else this.validate().then(handle).catch(reject);
+      } else handle();
     });
   }
 
@@ -111,7 +131,10 @@ export abstract class BaseClient extends SocketHandler {
           this._validated = true;
           resolve(token);
         })
-        .catch(reject);
+        .catch((reject) => {
+          console.log(reject);
+          reject(reject);
+        });
     });
   }
 
@@ -168,6 +191,42 @@ export abstract class BaseClient extends SocketHandler {
   }
 
   /**
+   * Create a new private chat with another user
+   *
+   * @param user uuid of the user on the other side of the private chat
+   *
+   * @returns Promise<void>
+   */
+
+  public createPrivateChat(user: string): Promise<void> {
+    return new Promise((resolve, reject) => {});
+  }
+
+  /**
+   * Create a new group
+   *
+   * @param props GroupProps to with information about the new group
+   *
+   * @returns Promise<void>
+   */
+
+  public createGroupChat({ name, tag, description, members = [] }: GroupProps): Promise<void> {
+    return new Promise((resolve, reject) => {});
+  }
+
+  /**
+   * Join a group by the group uuid
+   *
+   * @param group uuid of the group
+   *
+   * @returns Promise<void>
+   */
+
+  public joinGroup(group: string): Promise<void> {
+    return new Promise((resolve, reject) => {});
+  }
+
+  /**
    * Integrated logger
    *
    * @param message message to log
@@ -177,6 +236,18 @@ export abstract class BaseClient extends SocketHandler {
 
   public log(message: any): void {
     Logger.Log(message);
+  }
+
+  /**
+   * Integrated error Logger
+   *
+   * @param error error message to log
+   *
+   * @returns void
+   */
+
+  public error(error: any): void {
+    Logger.Error(error);
   }
 
   /**
@@ -216,6 +287,10 @@ export abstract class BaseClient extends SocketHandler {
   protected setConnected(state: boolean): void {
     this._connected = state;
   }
+
+  /**
+   * Current Client
+   */
 
   public get client(): Client {
     return this._client;
