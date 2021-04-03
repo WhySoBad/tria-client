@@ -5,12 +5,18 @@ import {
   GroupProps,
   SocketEvent,
 } from '../../types';
-import * as requests from '../../requests/Client.requests';
 import { BaseSocket } from '../websocket/BaseSocket.class';
 import { Logger } from '../Logger.class';
 import { ClientUser } from '../ClientUser.class';
 import { Client } from './Client.class';
 import { SocketHandler } from '../websocket/SocketHandler.class';
+import { AuthRequestManager } from '../request/AuthRequest.class';
+import { UserRequestManager } from '../request/UserRequest.class';
+import { ChatRequestManager } from '../request/ChatRequest.class';
+
+const authManager: AuthRequestManager = new AuthRequestManager();
+const userManager: UserRequestManager = new UserRequestManager();
+const chatManager: ChatRequestManager = new ChatRequestManager();
 
 /**
  * Base for the client class
@@ -48,12 +54,6 @@ export abstract class BaseClient extends SocketHandler {
 
   private _validated: boolean = false;
 
-  /**
-   * Array with all connected sockets
-   */
-
-  protected sockets: Array<BaseSocket> = [];
-
   constructor(auth: string | Credentials, logging: boolean) {
     super(logging);
     if (!auth) throw new Error('No Arguments Provided');
@@ -74,17 +74,14 @@ export abstract class BaseClient extends SocketHandler {
   public connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       const handle: () => void = () => {
-        if (!this._validated) return reject('Invalid Token');
+        if (!this._validated) reject('Token Not Validated');
         this.connectSockets(this._token)
-          .catch((error: any) => {
-            console.log('unable to connect sockets');
-            reject(error);
-            return;
-          })
+          .catch(reject)
           .then(() => {
             this.fetchUser()
               .then((user: ClientUser) => {
                 this._user = user;
+                this._connected = true;
                 this.emit(ClientEvent.READY);
                 resolve();
               })
@@ -92,10 +89,7 @@ export abstract class BaseClient extends SocketHandler {
           });
       };
       if (!this._validated) {
-        if (this.credentials)
-          this.login()
-            .then(handle)
-            .catch((reject) => console.log(reject));
+        if (this.credentials) this.login().then(handle).catch(reject);
         else this.validate().then(handle).catch(reject);
       } else handle();
     });
@@ -108,10 +102,13 @@ export abstract class BaseClient extends SocketHandler {
    */
 
   public disconnect(): Promise<void> {
-    return new Promise(async (resolve) => {
-      await Promise.all(this.sockets.map(async (socket: BaseSocket) => await socket.disconnect()));
-      this.emit(ClientEvent.DISCONNECT);
-      resolve();
+    return new Promise(async (resolve, reject) => {
+      this.disconnectSockets()
+        .then(() => {
+          this.emit(ClientEvent.DISCONNECT);
+          resolve();
+        })
+        .catch(reject);
     });
   }
 
@@ -124,17 +121,14 @@ export abstract class BaseClient extends SocketHandler {
   public login(): Promise<string> {
     return new Promise((resolve, reject) => {
       if (!this.credentials) reject('No Credentials Provided');
-      requests
-        .login(this.credentials)
+      authManager
+        .sendRequest('LOGIN', { body: this.credentials })
         .then((token: string) => {
           this.setToken(token);
           this._validated = true;
           resolve(token);
         })
-        .catch((reject) => {
-          console.log(reject);
-          reject(reject);
-        });
+        .catch(reject);
     });
   }
 
@@ -146,11 +140,9 @@ export abstract class BaseClient extends SocketHandler {
 
   protected validate(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (!this.token) {
-        reject('No Token Provided');
-      }
-      requests
-        .validate(this.token)
+      if (!this.token) reject('No Token Provided');
+      authManager
+        .sendRequest<'VALIDATE'>('VALIDATE', { authorization: this.token })
         .then((valid: boolean) => {
           this._validated = valid;
           resolve(valid);
@@ -170,8 +162,15 @@ export abstract class BaseClient extends SocketHandler {
   public logout(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.token) reject('No Token Provided');
-      if (!this.connected) reject('Client Not Connected');
-      requests.logout(this.token).then(resolve).catch(reject);
+      else if (!this.connected) reject('Client Not Connected');
+      else {
+        authManager
+          .sendRequest<'LOGOUT'>('LOGOUT', { authorization: this.token })
+          .then(() => {
+            this.disconnect().then(resolve).catch(reject);
+          })
+          .catch(reject);
+      }
     });
   }
 
@@ -183,8 +182,8 @@ export abstract class BaseClient extends SocketHandler {
 
   protected fetchUser(): Promise<ClientUser> {
     return new Promise((resolve, reject) => {
-      requests
-        .get(this.token)
+      userManager
+        .sendRequest<'GET_CURRENT'>('GET_CURRENT', { authorization: this.token })
         .then((data: ClientUserConstructor) => resolve(new ClientUser(this._client, data)))
         .catch(reject);
     });
@@ -199,7 +198,15 @@ export abstract class BaseClient extends SocketHandler {
    */
 
   public createPrivateChat(user: string): Promise<void> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+      chatManager
+        .sendRequest<'CREATE_PRIVATE'>('CREATE_PRIVATE', {
+          body: { user: user },
+          authorization: this.token,
+        })
+        .then(() => {})
+        .catch(reject);
+    });
   }
 
   /**
@@ -211,7 +218,15 @@ export abstract class BaseClient extends SocketHandler {
    */
 
   public createGroupChat({ name, tag, description, members = [] }: GroupProps): Promise<void> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+      chatManager
+        .sendRequest<'CREATE_GROUP'>('CREATE_GROUP', {
+          body: { name: name, tag: tag, description: description, members: members },
+          authorization: this.token,
+        })
+        .then(() => resolve()) //TODO: Add group to chats
+        .catch(reject);
+    });
   }
 
   /**
@@ -223,7 +238,31 @@ export abstract class BaseClient extends SocketHandler {
    */
 
   public joinGroup(group: string): Promise<void> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+      chatManager
+        .sendRequest<'JOIN'>('JOIN', { uuid: group, authorization: this.token })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Leave a group by the group uuid
+   *
+   * @param group uuid of the group
+   *
+   * @returns Promise<void>
+   */
+
+  public leaveGroup(group: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chatManager
+        .sendRequest<'LEAVE'>('LEAVE', { uuid: group, authorization: this.token })
+        .then(() => {
+          resolve();
+        })
+        .catch(reject);
+    });
   }
 
   /**
@@ -234,8 +273,8 @@ export abstract class BaseClient extends SocketHandler {
    * @returns void
    */
 
-  public log(message: any): void {
-    Logger.Log(message);
+  public log(...message: Array<any>): void {
+    Logger.Log(...message);
   }
 
   /**
@@ -246,8 +285,8 @@ export abstract class BaseClient extends SocketHandler {
    * @returns void
    */
 
-  public error(error: any): void {
-    Logger.Error(error);
+  public error(...error: Array<any>): void {
+    Logger.Error(...error);
   }
 
   /**

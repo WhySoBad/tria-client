@@ -1,29 +1,20 @@
-import { Logger } from '../Logger.class';
 import { RequestManager } from './RequestManager.class';
 
-interface Test {
+interface AuthRequests {
   LOGIN: { body: { username: string; password: string } };
-  GET_USER: { body: object; uuid: string; token: string };
-  RESET: void;
+  LOGOUT: { authorization: string };
+  VALIDATE: { authorization: string };
 }
 
-enum AuthRequests {
-  'LOGIN' = 'LOGIN',
-  'RESET' = 'RESET',
-}
+/**
+ * AuthRequestManager class to easily send auth requets
+ */
 
-export class AuthRequest extends RequestManager<Test> {
+export class AuthRequestManager extends RequestManager<AuthRequests> {
   constructor() {
     super({ suburl: 'auth' });
-    this.addRequest('GET_USER', 'login', 'POST');
-    this.addRequest('LOGIN', 'login', 'POST');
+    this.addRequest<'LOGIN'>('LOGIN', 'login', 'POST');
+    this.addRequest<'LOGOUT'>('LOGOUT', 'logout', 'GET');
+    this.addRequest<'VALIDATE'>('VALIDATE', 'validate', 'GET');
   }
 }
-
-const auth: AuthRequest = new AuthRequest();
-auth
-  .sendRequest<AuthRequests.LOGIN>(AuthRequests.LOGIN, {
-    body: { username: 'asdf@gmail.com', password: 'bruhh' },
-  })
-  .then((data) => Logger.Info(data))
-  .catch((error) => Logger.Error(error));

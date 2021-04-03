@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { Chat } from '.';
 import { ChatEdit, ChatSocketEvent, GroupConstructor } from '../types';
 import { Admin } from './Admin.class';
@@ -66,7 +67,11 @@ export class Group extends Chat {
   public setName(name: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.editable) reject("User Hasn't The Permission To Edit The Chat");
-      this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, { chat: this.uuid, data: { name: name } });
+      this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
+        uuid: v4(),
+        chat: this.uuid,
+        data: { name: name },
+      });
       const handler: (chat: ChatEdit) => void = (chat: ChatEdit) => {
         if (chat.uuid == this.uuid && chat.name == name) {
           this._name = chat.name as any;
@@ -89,7 +94,11 @@ export class Group extends Chat {
   public setTag(tag: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.editable) reject("User Hasn't The Permission To Edit The Chat");
-      this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, { chat: this.uuid, data: { tag: tag } });
+      this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
+        uuid: v4(),
+        chat: this.uuid,
+        data: { tag: tag },
+      });
       const handler: (chat: ChatEdit) => void = (chat: ChatEdit) => {
         if (chat.uuid == this.uuid && chat.tag == tag) {
           this._tag = chat.tag as any;
@@ -113,6 +122,7 @@ export class Group extends Chat {
     return new Promise((resolve, reject) => {
       if (!this.editable) reject("User Hasn't The Permission To Edit The Chat");
       this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
+        uuid: v4(),
         chat: this.uuid,
         data: { description: description },
       });

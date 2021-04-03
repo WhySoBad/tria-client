@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { Message, Member } from '.';
 import {
   ChatConstructor,
@@ -41,6 +42,22 @@ export abstract class Chat {
     messages.forEach((message: MessageContstructor) => {
       this._messages.set(message.uuid, new Message(this.client, message));
     });
+
+    this.client.on(ChatSocketEvent.MEMBER_LEAVE, (chat: string, member: string) => {
+      if (chat == this.uuid) this._members.delete(member);
+    });
+
+    this.client.on(ChatSocketEvent.MEMBER_JOIN, (chat: string, member: Member) => {
+      if (chat == this.uuid) this._members.set(member.user.uuid, member);
+    });
+
+    this.client.on(ChatSocketEvent.MEMBER_BANNED, (chat: string, member: string) => {
+      if (chat == this.uuid) this._members.delete(member);
+    });
+
+    this.client.on(ChatSocketEvent.MESSAGE, (message: Message) => {
+      if (message.chat == this.uuid) this._messages.set(message.uuid, message);
+    });
   }
 
   /**
@@ -80,9 +97,13 @@ export abstract class Chat {
   public sendMessage(message: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.writeable) reject('User Has To Be Member');
-      this.client.chat.emit(ChatSocketEvent.MESSAGE, { chat: this.uuid, data: message });
+      this.client.chat.emit(ChatSocketEvent.MESSAGE, {
+        uuid: v4(),
+        chat: this.uuid,
+        data: message,
+      });
       const handler: (message: Message) => void = (message: Message) => {
-        if (message.chat == this.uuid) {
+        if (message.chat === this.uuid && message.user == this.client.user.uuid) {
           console.log('MessageSenderFunction');
           this._messages.set(message.uuid, message);
           this.client.removeListener(ChatSocketEvent.MESSAGE, handler);

@@ -42,6 +42,8 @@ export abstract class RequestManager<
   /**
    * Add a new request to the manager
    *
+   * @param name name of the request
+   *
    * @param path path of the request e.g. "login" when the suburl is set to "auth" [fires auth/login]
    *
    * @param method method of the request ["GET", "POST"]
@@ -49,7 +51,7 @@ export abstract class RequestManager<
    * @returns void
    */
 
-  protected addRequest(name: keyof T, path: string, method: 'POST' | 'GET'): void {
+  protected addRequest<K extends keyof T>(name: K, path: string, method: 'POST' | 'GET'): void {
     this._requests[name as string] = {
       path: path,
       method: method,
@@ -85,7 +87,7 @@ export abstract class RequestManager<
           path = path.replace(`%${key}`, `${value}`);
         }
       });
-      const token: string | null = (props && props.token) || null;
+      const token: string | null = (props && props.authorization) || null;
       config.headers = { ...config.headers, Authorization: `Bearer ${token}` };
       if (method === 'POST') {
         this._instance
