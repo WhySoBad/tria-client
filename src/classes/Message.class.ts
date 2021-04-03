@@ -1,11 +1,8 @@
-import * as requests from '../requests/Message.requests';
-import { ChatSocketEvent, ClientEvent, MessageContstructor, MessageEdit } from '../types';
+import { ChatSocketEvent, MessageContstructor, MessageEdit } from '../types';
 import { Client } from './client';
 
 /**
  * Message instance
- *
- * @see documentation reference
  */
 
 export class Message {

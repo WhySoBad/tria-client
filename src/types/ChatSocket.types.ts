@@ -37,12 +37,51 @@ export interface ChatSocketEvents extends SocketEvents {
 }
 
 export enum ChatSocketEvent {
+  /**
+   * Message event
+   */
+
   MESSAGE = 'MESSAGE',
+
+  /**
+   * Chat edit event
+   */
+
   CHAT_EDIT = 'CHAT_EDIT',
+
+  /**
+   * Message edit event
+   */
+
   MESSAGE_EDIT = 'MESSAGE_EDIT',
+
+  /**
+   * Member edit event
+   */
+
   MEMBER_EDIT = 'MEMBER_EDIT',
+
+  /**
+   * Chat delete event
+   */
+
   CHAT_DELETE = 'CHAT_DELETE',
+
+  /**
+   * Member join event
+   */
+
   MEMBER_JOIN = 'MEMBER_JOIN',
+
+  /**
+   * Member leave event
+   */
+
   MEMBER_LEAVE = 'MEMBER_LEAVE',
+
+  /**
+   * Member banned event
+   */
+
   MEMBER_BANNED = 'MEMBER_BANNED',
 }

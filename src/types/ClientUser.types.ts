@@ -1,15 +1,16 @@
 import { ChatConstructor } from './Chat.types';
+import { UserConstructor } from './User.types';
 
-export interface ClientUserConstructor {
-  uuid: string;
-  createdAt: Date;
-  lastSeen: Date;
+export interface ClientUserConstructor extends UserConstructor {
+  /**
+   * Mail address of the user
+   */
+
   mail: string;
-  name: string;
-  tag: string;
-  description: string;
-  avatar: string;
-  locale: string;
-  online: boolean;
+
+  /**
+   * Chats of the user
+   */
+
   chats: Array<ChatConstructor>;
 }

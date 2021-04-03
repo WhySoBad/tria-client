@@ -1,26 +1,26 @@
 export class Logger {
-  public static Error(error: any) {
+  public static Error(...args: Array<any>) {
     const prefix: string = '[\u001b[31mError\u001b[37m]';
-    console.log(`${prefix} ${error}`);
+    console.log(prefix, ...args);
   }
-  public static Event(event: any) {
+  public static Event(...args: Array<any>) {
     const prefix: string = '[\u001b[32mEvent\u001b[37m]';
-    console.log(`${prefix} ${event}`);
+    console.log(prefix, ...args);
   }
-  public static Info(info: any) {
+  public static Info(...args: Array<any>) {
     const prefix: string = '[\u001b[34mInfo\u001b[37m]';
-    console.log(`${prefix} ${info}`);
+    console.log(prefix, ...args);
   }
-  public static Warning(warning: any) {
+  public static Warning(...args: Array<any>) {
     const prefix: string = '[\u001b[33mWarning\u001b[37m]';
-    console.log(`${prefix} ${warning}`);
+    console.log(prefix, ...args);
   }
-  public static Request(request: any) {
+  public static Request(...args: Array<any>) {
     const prefix: string = '[\u001b[35mRequest\u001b[37m]';
-    console.log(`${prefix} ${request}`);
+    console.log(prefix, ...args);
   }
-  public static Log(message: any) {
+  public static Log(...args: Array<any>) {
     const prefix: string = '[\u001b[34mLog\u001b[37m]';
-    console.log(`${prefix} ${message}`);
+    console.log(prefix, ...args);
   }
 }

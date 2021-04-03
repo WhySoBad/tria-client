@@ -1,7 +1,15 @@
 import { Chat, Group, PrivateChat, PrivateGroup } from '.';
-import * as requests from '../requests/ClientUser.requests';
-import { ChatConstructor, ChatType, ClientUserConstructor, Locale } from '../types';
+import {
+  ChatConstructor,
+  ChatSocketEvent,
+  ChatType,
+  ClientUserConstructor,
+  Locale,
+} from '../types';
 import { Client } from './client';
+import { UserRequestManager } from './request/UserRequest.class';
+
+const userManager: UserRequestManager = new UserRequestManager();
 
 export class ClientUser {
   /**
@@ -58,6 +66,20 @@ export class ClientUser {
         this._chats.set(chat.uuid, new PrivateChat(this.client, chat));
       } else this._chats.set(chat.uuid, new PrivateGroup(this.client, chat));
     });
+
+    /*     this.client.on(ChatSocketEvent.MEMBER_JOIN, (chat: string, member: Member) => {
+      if (member.user.uuid == this.uuid) this._chats.set(chat, {});
+    }); */
+
+    this.client.on(ChatSocketEvent.MEMBER_LEAVE, (chat: string, member: string) => {
+      if (member == this.uuid) this._chats.delete(chat);
+    });
+
+    this.client.on(ChatSocketEvent.MEMBER_BANNED, (chat: string, member: string) => {
+      if (member == this.uuid) this._chats.delete(chat);
+    });
+
+    this.client.on(ChatSocketEvent.CHAT_DELETE, (chat: string) => this._chats.delete(chat));
   }
 
   /**
@@ -112,7 +134,7 @@ export class ClientUser {
    * Locale of the user
    */
 
-  public get locale(): string {
+  public get locale(): Locale {
     return this._locale;
   }
 
@@ -141,13 +163,16 @@ export class ClientUser {
   public setName(name: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this._name === name) reject('New Name Is Equal To Old Name');
-      requests
-        .edit(this.client.token, { name: name })
-        .catch(reject)
+      userManager
+        .sendRequest<'EDIT'>('EDIT', {
+          authorization: this.client.token,
+          body: { name: name },
+        })
         .then(() => {
           this._name = name;
           resolve();
-        });
+        })
+        .catch(reject);
     });
   }
 
@@ -160,13 +185,16 @@ export class ClientUser {
   public setTag(tag: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this._tag === tag) reject('New Tag Is Equal To Old Tag');
-      requests
-        .edit(this.client.token, { tag: tag })
-        .catch(reject)
+      userManager
+        .sendRequest<'EDIT'>('EDIT', {
+          authorization: this.client.token,
+          body: { tag: tag },
+        })
         .then(() => {
           this._tag = tag;
           resolve();
-        });
+        })
+        .catch(reject);
     });
   }
 
@@ -179,13 +207,16 @@ export class ClientUser {
   public setDescription(description: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this._description === description) reject('New Description Is Equal To Old Description');
-      requests
-        .edit(this.client.token, { description: description })
-        .catch(reject)
+      userManager
+        .sendRequest<'EDIT'>('EDIT', {
+          authorization: this.client.token,
+          body: { description: description },
+        })
         .then(() => {
           this._description = description;
           resolve();
-        });
+        })
+        .catch(reject);
     });
   }
 
@@ -198,13 +229,16 @@ export class ClientUser {
   public setLocale(locale: Locale): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this._locale === locale) reject('New Locale Is Equal To Old Locale');
-      requests
-        .edit(this.client.token, { locale: locale })
-        .catch(reject)
+      userManager
+        .sendRequest<'EDIT'>('EDIT', {
+          authorization: this.client.token,
+          body: { locale: locale },
+        })
         .then(() => {
           this._locale = locale;
           resolve();
-        });
+        })
+        .catch(reject);
     });
   }
 
@@ -217,13 +251,53 @@ export class ClientUser {
   public setAvatar(avatar: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this._avatar === avatar) reject('New Avatar Is Equal To Old Avatar');
-      requests
-        .edit(this.client.token, { avatar: avatar })
-        .catch(reject)
+      userManager
+        .sendRequest<'EDIT'>('EDIT', {
+          authorization: this.client.token,
+          body: { avatar: avatar },
+        })
         .then(() => {
           this._avatar = avatar;
           resolve();
-        });
+        })
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Edit multiple user informations at once
+   *
+   * @param userInfo object with the informations to edit
+   *
+   * @returns Promise<void>
+   */
+
+  public setUserInfo(userInfo: {
+    locale?: Locale;
+    description?: string;
+    name?: string;
+    tag?: string;
+    avatar?: string;
+  }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      Object.entries(userInfo).forEach(([key, value]) => {
+        if (!value) delete (userInfo as any)[key];
+      });
+      if (Object.keys(userInfo).length == 0) reject('No Informations Provided');
+      userManager
+        .sendRequest<'EDIT'>('EDIT', {
+          authorization: this.client.token,
+          body: userInfo,
+        })
+        .then(() => {
+          this._locale = userInfo.locale || this._locale;
+          this._description = userInfo.description || this._description;
+          this._name = userInfo.name || this._name;
+          this._tag = userInfo.tag || this._tag;
+          this._avatar = userInfo.avatar || this._avatar;
+          resolve();
+        })
+        .catch(reject);
     });
   }
 }
