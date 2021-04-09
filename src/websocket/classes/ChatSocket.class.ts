@@ -1,41 +1,54 @@
 import { BaseSocket } from './BaseSocket.class';
 import { ChatSocketConstructor, ChatSocketEvent } from '../types/ChatSocket.types';
-import { Member, MemberConstructor } from '../../chat';
+import { ChatType, Member, MemberConstructor } from '../../chat';
 
 export class ChatSocket extends BaseSocket {
   constructor(props: ChatSocketConstructor) {
     super(props);
     this.addEvent(ChatSocketEvent.MESSAGE);
-    this.addEvent(ChatSocketEvent.CHAT_EDIT, ({ chat, tag, name, description, type }) => {
-      return { uuid: chat, tag: tag, name: name, description: description, type: type };
-    });
-    this.addEvent(
-      ChatSocketEvent.MESSAGE_EDIT,
-      ({ chat, message, text, pinned, edited, editedAt }) => {
-        return {
-          chat: chat,
-          uuid: message,
-          text: text,
-          pinned: pinned,
-          edited: edited,
-          editedAt: editedAt,
-        };
-      }
-    );
     this.addEvent(ChatSocketEvent.MEMBER_EDIT);
     this.addEvent(ChatSocketEvent.CHAT_DELETE);
     this.addEvent(ChatSocketEvent.MEMBER_ONLINE);
     this.addEvent(ChatSocketEvent.MEMBER_OFFLINE);
     this.addEvent(ChatSocketEvent.MEMBER_BAN);
     this.addEvent(ChatSocketEvent.MEMBER_UNBAN);
+    this.addEvent(ChatSocketEvent.GROUP_CREATE);
+
+    this.addEvent(ChatSocketEvent.CHAT_EDIT, ({ chat, tag, name, description, type }) => ({
+      uuid: chat,
+      tag: tag,
+      name: name,
+      description: description,
+      type: type,
+    }));
+    this.addEvent(
+      ChatSocketEvent.MESSAGE_EDIT,
+      ({ chat, message, text, pinned, edited, editedAt }) => ({
+        chat: chat,
+        uuid: message,
+        text: text,
+        pinned: pinned,
+        edited: edited,
+        editedAt: editedAt,
+      })
+    );
+
     this.addEvent(
       ChatSocketEvent.MEMBER_JOIN,
-      (member: { chat: string; user: MemberConstructor }) => {
-        return [member.chat, new Member(member.user)];
-      }
+      (member: { chat: string; user: MemberConstructor }) => [member.chat, new Member(member.user)]
     );
-    this.addEvent(ChatSocketEvent.MEMBER_LEAVE, (member: { chat: string; user: string }) => {
-      return [member.chat, member.user];
-    });
+    this.addEvent(ChatSocketEvent.MEMBER_LEAVE, (member: { chat: string; user: string }) => [
+      member.chat,
+      member.user,
+    ]);
+    this.addEvent(
+      ChatSocketEvent.PRIVATE_CREATE,
+      (chat: {
+        uuid: string;
+        type: ChatType;
+        messages: Array<any>;
+        members: Array<MemberConstructor>;
+      }) => ({ ...chat, name: null, tag: null, description: null })
+    );
   }
 }

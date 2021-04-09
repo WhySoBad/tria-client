@@ -1,9 +1,13 @@
 import { v4 } from 'uuid';
 import { Client } from '../../client';
-import { ActionMaintainer } from '../../util';
+import { ChatRequestManager } from '../../request';
+import { handleAction } from '../../util';
+import { Collection } from '../../util/Collection.class';
 import { ChatSocketEvent } from '../../websocket';
 import { Message, Member } from '../classes';
 import { ChatConstructor, ChatType, MemberConstructor, MessageContstructor } from '../types';
+
+const chatManager: ChatRequestManager = new ChatRequestManager();
 
 export abstract class Chat {
   /**
@@ -28,9 +32,10 @@ export abstract class Chat {
 
   protected _messages: Map<string, Message> = new Map<string, Message>();
 
-  constructor(client: Client, { uuid, members, messages }: ChatConstructor) {
+  constructor(client: Client, { uuid, members, messages, type }: ChatConstructor) {
     this.client = client;
     this.uuid = uuid;
+    this.type = type;
     members.forEach((member: MemberConstructor) => {
       this._members.set(member.user.uuid, new Member(member));
     });
@@ -88,8 +93,8 @@ export abstract class Chat {
    * Members of the chat
    */
 
-  public get members(): Map<string, Member> {
-    return this._members;
+  public get members(): Collection<string, Member> {
+    return new Collection<string, Member>(this._members);
   }
 
   /**
@@ -106,8 +111,27 @@ export abstract class Chat {
    * Messages of the chat
    */
 
-  public get messages(): Map<string, Message> {
-    return this._messages;
+  public get messages(): Collection<string, Message> {
+    return new Collection<string, Message>(this._messages);
+  }
+
+  /**
+   * Delete the chat
+   *
+   * @returns Promise<void>
+   */
+
+  public delete(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.writeable) reject('User Has To Be Member');
+      chatManager
+        .sendRequest<'DELETE'>('DELETE', {
+          uuid: this.uuid,
+          authorization: this.client.token,
+        })
+        .then(resolve)
+        .catch(reject);
+    });
   }
 
   /**
@@ -127,7 +151,7 @@ export abstract class Chat {
         chat: this.uuid,
         data: message,
       });
-      new ActionMaintainer(this.client, actionUuid).handle().then(resolve).catch(reject);
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
   }
 }

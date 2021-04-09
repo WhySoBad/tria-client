@@ -17,7 +17,6 @@ const chatManager: ChatRequestManager = new ChatRequestManager();
  * Used for big methods to keep the Client class small
  *
  * @see documentation reference
- *
  */
 
 export abstract class BaseClient extends SocketHandler {
@@ -222,14 +221,20 @@ export abstract class BaseClient extends SocketHandler {
    * @returns Promise<void>
    */
 
-  public createGroupChat({ name, tag, description, members = [] }: GroupProps): Promise<void> {
+  public createGroupChat({
+    name,
+    tag,
+    description,
+    type,
+    members = [],
+  }: GroupProps): Promise<void> {
     return new Promise((resolve, reject) => {
       chatManager
         .sendRequest<'CREATE_GROUP'>('CREATE_GROUP', {
-          body: { name: name, tag: tag, description: description, members: members },
+          body: { name: name, tag: tag, description: description, members: members, type: type },
           authorization: this.token,
         })
-        .then(() => resolve()) //TODO: Add group to chats
+        .then(resolve) //TODO: Add group to chats
         .catch(reject);
     });
   }

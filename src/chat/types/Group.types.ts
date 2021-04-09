@@ -10,6 +10,11 @@ export interface GroupConstructor extends ChatConstructor {
   banned: Array<BannedMemberConstructor>;
 }
 
+export enum GroupType {
+  PRIVATE_GROUP = 'PRIVATE_GROUP',
+  GROUP = 'GROUP',
+}
+
 export interface GroupProps {
   /**
    * Name of the group
@@ -28,6 +33,12 @@ export interface GroupProps {
    */
 
   description: string;
+
+  /**
+   * Type of the group
+   */
+
+  type: GroupType;
 
   /**
    * Members of the group

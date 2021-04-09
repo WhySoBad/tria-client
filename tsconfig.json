@@ -3,11 +3,11 @@
     "target": "ES6",
     "module": "CommonJS",
     "outDir": "./dist",
-    "declaration": false,
+    "declaration": true,
     "sourceMap": false,
     "importHelpers": true,
     "downlevelIteration": true,
-
+    "stripInternal": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -19,13 +19,12 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-
+    "declarationMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
   "include": ["./src/**/*", "./test/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

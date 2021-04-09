@@ -1,8 +1,8 @@
 import { v4 } from 'uuid';
 import { Client } from '../../client';
-import { ActionMaintainer } from '../../util';
+import { handleAction } from '../../util';
 import { ChatSocketEvent } from '../../websocket';
-import { MessageContstructor, MessageEdit } from '../types';
+import { MessageContstructor } from '../types';
 
 /**
  * Message instance
@@ -133,7 +133,7 @@ export class Message {
         message: this.uuid,
         text: text,
       });
-      new ActionMaintainer(this.client, actionUuid).handle().then(resolve).catch(reject);
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
   }
 
@@ -146,18 +146,13 @@ export class Message {
   public pin(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this._pinned) reject('Message Is Already Pinned');
+      const actionUuid: string = v4();
       this.client.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
+        actionUuid: actionUuid,
         message: this.uuid,
         pinned: true,
       });
-      const handler: (message: MessageEdit) => void = (message) => {
-        if (message.uuid === this.uuid && !this._pinned) {
-          this._pinned = true;
-          this.client.removeListener(ChatSocketEvent.MESSAGE_EDIT, handler);
-          resolve();
-        }
-      };
-      this.client.on(ChatSocketEvent.MESSAGE_EDIT, handler);
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
   }
 
@@ -170,18 +165,13 @@ export class Message {
   public unpin(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this._pinned) reject('Message Is Not Pinned');
+      const actionUuid: string = v4();
       this.client.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
+        actionUuid: actionUuid,
         message: this.uuid,
         pinned: false,
       });
-      const handler: (message: MessageEdit) => void = (message) => {
-        if (message.uuid === this.uuid && this._pinned) {
-          this._pinned = false;
-          this.client.removeListener(ChatSocketEvent.MESSAGE_EDIT, handler);
-          resolve();
-        }
-      };
-      this.client.on(ChatSocketEvent.MESSAGE_EDIT, handler);
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
   }
 }

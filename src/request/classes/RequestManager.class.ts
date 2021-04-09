@@ -10,7 +10,10 @@ const baseurl = config.apiUrl;
  * Base class for all request classes with functions to add requests
  *
  * and send typesafe request without creating requests with axios
+ *
  */
+
+/** @internal */
 
 export abstract class RequestManager<
   T extends { [key: string]: any } & (T[keyof T] extends void | object

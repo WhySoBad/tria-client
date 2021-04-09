@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import { SocketEvent, BaseSocketConstructor } from '../types';
 import { connect } from 'socket.io-client';
+import { config } from '../../util/config';
 
 export abstract class BaseSocket extends EventEmitter {
   private token: string;
@@ -21,6 +22,7 @@ export abstract class BaseSocket extends EventEmitter {
     super();
     this.token = props.token;
     this.url = props.url;
+    this.setMaxListeners(config.maxListenerCount);
   }
 
   /**

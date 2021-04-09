@@ -1,15 +1,22 @@
 import { v4 } from 'uuid';
 import { Client } from '../../client';
-import { ActionMaintainer } from '../../util';
+import { handleAction } from '../../util';
+import { Collection } from '../../util/Collection.class';
 import { ChatSocketEvent } from '../../websocket';
 import { Chat } from '../classes';
-import { BannedMemberConstructor, GroupConstructor, GroupRole } from '../types';
+import { BannedMemberConstructor, ChatType, GroupConstructor, GroupRole } from '../types';
 import { Admin } from './Admin.class';
 import { BannedMember } from './BannedMember.class';
 import { Member } from './Member.class';
 import { Owner } from './Owner.class';
 
 export class Group extends Chat {
+  /**
+   * Boolean whether the group is public or not
+   */
+
+  public readonly public: boolean;
+
   private _name: string;
 
   private _tag: string;
@@ -20,6 +27,8 @@ export class Group extends Chat {
 
   constructor(client: Client, props: GroupConstructor) {
     super(client, props);
+    if (props.type === ChatType.PRIVATE_GROUP) this.public = false;
+    else if (props.type === ChatType.GROUP) this.public = true;
     this._name = props.name as any;
     this._tag = props.tag as any;
     this._description = props.description as any;
@@ -113,23 +122,118 @@ export class Group extends Chat {
   }
 
   /**
-   * Boolean whether the chat is editable
+   * Boolean whether the user is allowed the edit the group
    *
-   * Since only admins can edit a chat the default value is false
+   * Since only admins can edit groups the default value is false
    *
    * @default false
    */
 
-  public get editable(): boolean {
-    return true;
+  public get canEditGroup(): boolean {
+    if (!this.writeable) return false;
+    const member: Member | undefined = this._members.get(this.client.user.uuid);
+    if (!member) return false;
+    if (member instanceof Owner) return true;
+    else if (member instanceof Admin) return member.canEditGroup;
+    else return false;
+  }
+
+  /**
+   * Boolean whether the user is allowed to edit members
+   *
+   * Since only admins can edit members the default value is false
+   *
+   * @default false
+   */
+
+  public get canEditMembers(): boolean {
+    if (!this.writeable) return false;
+    const member: Member | undefined = this._members.get(this.client.user.uuid);
+    if (!member) return false;
+    if (member instanceof Owner) return true;
+    else if (member instanceof Admin) return member.canEditMembers;
+    else return false;
+  }
+
+  /**
+   * Boolean whether the user is allowed to ban members
+   *
+   * Since only admins can ban members the default value is false
+   *
+   * @default false
+   */
+
+  public get canBan(): boolean {
+    if (!this.writeable) return false;
+    const member: Member | undefined = this._members.get(this.client.user.uuid);
+    if (!member) return false;
+    if (member instanceof Owner) return true;
+    else if (member instanceof Admin) return member.canBan;
+    else return false;
+  }
+
+  /**
+   * Boolean whether the user is allowed to unban members
+   *
+   * Since only admins can unban members the default value is false
+   *
+   * @default false
+   */
+
+  public get canUnban(): boolean {
+    if (!this.writeable) return false;
+    const member: Member | undefined = this._members.get(this.client.user.uuid);
+    if (!member) return false;
+    if (member instanceof Owner) return true;
+    else if (member instanceof Admin) return member.canUnban;
+    else return false;
+  }
+
+  /**
+   * Boolean whether the user is allowed to kick members
+   *
+   * Since only admins can kick members the default value is false
+   *
+   * @default false
+   */
+
+  public get canKick(): boolean {
+    if (!this.writeable) return false;
+    const member: Member | undefined = this._members.get(this.client.user.uuid);
+    if (!member) return false;
+    if (member instanceof Owner) return true;
+    else if (member instanceof Admin) return member.canKick;
+    else return false;
+  }
+
+  /**
+   * Boolean whether the user can delete the group
+   */
+
+  public get canDelete(): boolean {
+    const member: Member | undefined = this._members.get(this.client.user.uuid);
+    return !!(member && member instanceof Owner);
   }
 
   /**
    * Banned members of the group
    */
 
-  public get bannedMembers(): Map<string, BannedMember> {
-    return this._banned;
+  public get bannedMembers(): Collection<string, BannedMember> {
+    return new Collection<string, BannedMember>(this._banned);
+  }
+
+  /**
+   * Delete the group
+   *
+   * @returns Promise<void>
+   */
+
+  public delete(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.canDelete) reject('Only Owner Can Delete A Group');
+      else super.delete().then(resolve).catch(reject);
+    });
   }
 
   /**
@@ -142,14 +246,14 @@ export class Group extends Chat {
 
   public setName(name: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!this.editable) reject("User Hasn't The Permission To Edit The Chat");
+      if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
       this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
         uuid: actionUuid,
         chat: this.uuid,
         data: { name: name },
       });
-      new ActionMaintainer(this.client, actionUuid).handle().then(resolve).catch(reject);
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
   }
 
@@ -163,14 +267,14 @@ export class Group extends Chat {
 
   public setTag(tag: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!this.editable) reject("User Hasn't The Permission To Edit The Chat");
+      if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
       this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
         uuid: actionUuid,
         chat: this.uuid,
         data: { tag: tag },
       });
-      new ActionMaintainer(this.client, actionUuid).handle().then(resolve).catch(reject);
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
   }
 
@@ -184,14 +288,14 @@ export class Group extends Chat {
 
   public setDescription(description: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!this.editable) reject("User Hasn't The Permission To Edit The Chat");
+      if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
       this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
         uuid: actionUuid,
         chat: this.uuid,
         data: { description: description },
       });
-      new ActionMaintainer(this.client, actionUuid).handle().then(resolve).catch(reject);
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
   }
 }

@@ -1,4 +1,4 @@
-import { GroupRole } from '../../chat';
+import { GroupRole, GroupType } from '../../chat';
 import { RequestManager } from './RequestManager.class';
 
 interface ChatRequests {
@@ -7,6 +7,7 @@ interface ChatRequests {
       name: string;
       tag: string;
       description: string;
+      type: GroupType;
       members: Array<{ uuid: string; role: GroupRole }>;
     };
     authorization: string;

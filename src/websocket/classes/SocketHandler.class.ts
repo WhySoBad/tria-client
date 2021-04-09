@@ -40,6 +40,8 @@ export abstract class SocketHandler extends (EventEmitter as new () => TypedEven
 
   constructor(protected logging: boolean) {
     super();
+    this.setMaxListeners(config.maxListenerCount);
+    this.raw.setMaxListeners(config.maxListenerCount);
   }
 
   /**

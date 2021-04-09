@@ -1,9 +1,45 @@
 import { ChatPreview } from '../chat';
-import { Credentials, Locale, UserPreview } from '../client';
-import { ChatRequestManager, UserRequestManager } from '../request';
+import { Client, Credentials, Locale, UserPreview } from '../client';
+import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../request';
+import { ActionError, SocketEvent } from '../websocket';
 
+const authManager: AuthRequestManager = new AuthRequestManager();
 const userManager: UserRequestManager = new UserRequestManager();
 const chatManager: ChatRequestManager = new ChatRequestManager();
+
+/**
+ * Login a user using the credentials
+ *
+ * @param credentials credentials of the user
+ *
+ * @returns Promise<string>
+ */
+
+export const loginUser = (credentials: Credentials): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    authManager
+      .sendRequest<'LOGIN'>('LOGIN', { body: credentials })
+      .then(resolve)
+      .catch(reject);
+  });
+};
+
+/**
+ * Validate an auth token whether it's still valid
+ *
+ * @param token token to be validated
+ *
+ * @returns Promise<boolean>
+ */
+
+export const validateToken = (token: string): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    authManager
+      .sendRequest<'VALIDATE'>('VALIDATE', { authorization: token })
+      .then(resolve)
+      .catch(reject);
+  });
+};
 
 /**
  * Register a new user
@@ -181,4 +217,37 @@ export const getChatPreview = (uuid: string): Promise<ChatPreview> => {
 
 export const delay = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(() => resolve, ms));
+};
+
+/**
+ * Maintainer waiting for the right success/error socket
+ *
+ * @param client current client
+ *
+ * @param actionUuid uuid of the action
+ *
+ * @returns Promise<void>
+ */
+
+export const handleAction = (client: Client, actionUuid: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const handleSuccess = (uuid: string) => {
+      if (actionUuid === uuid) {
+        client.raw.removeListener(SocketEvent.ACTION_ERROR, handleError);
+        client.raw.removeListener(SocketEvent.ACTION_SUCCESS, handleSuccess);
+        resolve();
+      }
+    };
+
+    const handleError = ({ uuid, ...error }: ActionError) => {
+      if (actionUuid === uuid) {
+        client.raw.removeListener(SocketEvent.ACTION_ERROR, handleError);
+        client.raw.removeListener(SocketEvent.ACTION_SUCCESS, handleSuccess);
+        reject(error);
+      }
+    };
+
+    client.raw.on(SocketEvent.ACTION_ERROR, handleError);
+    client.raw.on(SocketEvent.ACTION_SUCCESS, handleSuccess);
+  });
 };

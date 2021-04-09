@@ -6,4 +6,3 @@ export * from './Member.types';
 export * from './Message.types';
 export * from './Owner.types';
 export * from './PrivateChat.types';
-export * from './PrivateGroup.types';

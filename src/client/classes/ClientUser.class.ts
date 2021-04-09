@@ -1,10 +1,20 @@
-import { Chat, ChatConstructor, ChatEdit, ChatType, Group, GroupConstructor, PrivateChat, PrivateGroup } from "../../chat";
-import { ChatRequestManager, UserRequestManager } from "../../request";
-import { config } from "../../util/config";
-import { ChatSocketEvent } from "../../websocket";
-import { ClientUserConstructor, Locale } from "../types";
-import { Client } from "./Client.class";
-
+import {
+  BannedMember,
+  Chat,
+  ChatConstructor,
+  ChatEdit,
+  ChatType,
+  Group,
+  GroupConstructor,
+  PrivateChat,
+  PrivateChatConstructor,
+} from '../../chat';
+import { ChatRequestManager, UserRequestManager } from '../../request';
+import { Collection } from '../../util/Collection.class';
+import { config } from '../../util/config';
+import { ChatSocketEvent } from '../../websocket';
+import { ClientUserConstructor, Locale } from '../types';
+import { Client } from './Client.class';
 
 const userManager: UserRequestManager = new UserRequestManager();
 const chatManager: ChatRequestManager = new ChatRequestManager();
@@ -58,18 +68,14 @@ export class ClientUser {
     this._online = props.online;
     this._locale = props.locale as Locale;
     this._avatar = props.avatar;
+
     props.chats.forEach((chat: ChatConstructor) => {
-      switch (chat.type) {
-        case ChatType.GROUP: {
-          const group: Group = new Group(this.client, chat as GroupConstructor);
-          this._chats.set(group.uuid, group);
-          break;
-        }
-        case ChatType.PRIVATE: {
-          const privateChat: PrivateChat = new PrivateChat(this.client, chat);
-          this._chats.set(privateChat.uuid, privateChat);
-          break;
-        }
+      if (chat.type === ChatType.GROUP || chat.type === ChatType.PRIVATE_GROUP) {
+        const group: Group = new Group(this.client, chat as GroupConstructor);
+        this._chats.set(group.uuid, group);
+      } else if (chat.type === ChatType.PRIVATE) {
+        const privateChat: PrivateChat = new PrivateChat(this.client, chat);
+        this._chats.set(privateChat.uuid, privateChat);
       }
     });
 
@@ -86,34 +92,29 @@ export class ClientUser {
     this.client.raw.on(ChatSocketEvent.CHAT_EDIT, (data: ChatEdit) => {
       const chat: Chat | undefined = this._chats.get(data.uuid);
       if (!chat) return client.error('Failed To Edit Chat');
-      switch (data.type) {
-        case ChatType.GROUP: {
-          const group: Group = new Group(chat.client, {
-            ...chat,
-            name: data.name as string,
-            tag: data.tag as string,
-            description: data.description as string,
-            messages: [...chat.messages.values()],
-            members: [...chat.members.values()],
-            banned: [],
-          });
-          this._chats.set(data.uuid, group);
-          break;
-        }
-        case ChatType.PRIVATE_GROUP: {
-          const privateGroup: PrivateGroup = new PrivateGroup(chat.client, {
-            ...chat,
-            name: data.name as string,
-            tag: data.tag as string,
-            description: data.description as string,
-            messages: [...chat.messages.values()],
-            members: [...chat.members.values()],
-            banned: [],
-          });
-          this._chats.set(data.uuid, privateGroup);
-          break;
-        }
-      }
+      if (!(chat instanceof Group)) return client.error('Chat Has To Be A Group To Be Edited');
+      const group: Group = new Group(chat.client, {
+        ...chat,
+        name: data.name as string,
+        tag: data.tag as string,
+        type: data.type,
+        description: data.description as string,
+        messages: [...chat.messages.values()],
+        members: [...chat.members.values()],
+        banned: [...chat.bannedMembers.values()].map((banned: BannedMember) => ({
+          ...banned,
+          user: { ...banned, avatar: banned.avatarURL },
+        })),
+      });
+      this._chats.set(data.uuid, group);
+    });
+
+    this.client.raw.on(ChatSocketEvent.PRIVATE_CREATE, (constructor: PrivateChatConstructor) => {
+      this._chats.set(constructor.uuid, new PrivateChat(this.client, constructor));
+    });
+
+    this.client.raw.on(ChatSocketEvent.GROUP_CREATE, (constructor: GroupConstructor) => {
+      this._chats.set(constructor.uuid, new Group(this.client, constructor));
     });
   }
 
@@ -185,8 +186,8 @@ export class ClientUser {
    * Chats of the user
    */
 
-  public get chats(): Map<string, Chat> {
-    return this._chats;
+  public get chats(): Collection<string, Chat> {
+    return new Collection<string, Chat>(this._chats);
   }
 
   /**

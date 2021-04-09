@@ -1,6 +1,6 @@
 import { ChatEdit } from '../../chat/types/Chat.types';
 import { Permission } from '../../chat/types/Admin.types';
-import { GroupRole, Member, Message } from '../../chat';
+import { GroupConstructor, GroupRole, Member, Message, PrivateChatConstructor } from '../../chat';
 import { BaseSocketConstructor, SocketEvents } from './BaseSocket.types';
 
 export interface ChatSocketConstructor extends BaseSocketConstructor {}
@@ -41,6 +41,10 @@ export interface ChatSocketEvents extends SocketEvents {
   MEMBER_ONLINE: (member: string) => void;
 
   MEMBER_OFFLINE: (member: string) => void;
+
+  PRIVATE_CREATE: (privateChat: PrivateChatConstructor) => void;
+
+  GROUP_CREATE: (groupChat: GroupConstructor) => void;
 }
 
 export enum ChatSocketEvent {
@@ -109,4 +113,16 @@ export enum ChatSocketEvent {
    */
 
   MEMBER_OFFLINE = 'MEMBER_OFFLINE',
+
+  /**
+   * Private chat create event
+   */
+
+  PRIVATE_CREATE = 'PRIVATE_CREATE',
+
+  /**
+   * Group chat create event
+   */
+
+  GROUP_CREATE = 'GROUP_CREATE',
 }
