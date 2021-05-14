@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import TypedEventEmitter from 'typed-emitter';
-import { ClientEvents } from '../../client';
+import { Client, ClientEvents } from '../../client';
 import { Logger } from '../../util';
 import { config } from '../../util/config';
 import { ChatSocketEvent, SocketEvent } from '../types';
@@ -26,6 +26,8 @@ export abstract class SocketHandler extends (EventEmitter as new () => TypedEven
    */
 
   public raw = new EventEmitter() as TypedEventEmitter<ClientEvents>;
+
+  protected _client: Client;
 
   /**
    * Subclass to emit and receive events for the ChatSocket
@@ -56,7 +58,7 @@ export abstract class SocketHandler extends (EventEmitter as new () => TypedEven
 
   protected connectSockets(token: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      this._chat = new ChatSocket({ token: token, url: config.apiUrl });
+      this._chat = new ChatSocket({ client: this._client, token: token, url: config.apiUrl });
       await this._chat.connect().then(() => {
         this._chat.on('*', async (...args: Array<any>) => {
           const [event, ...rest] = args;

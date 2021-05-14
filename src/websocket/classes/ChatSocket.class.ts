@@ -1,11 +1,11 @@
 import { BaseSocket } from './BaseSocket.class';
 import { ChatSocketConstructor, ChatSocketEvent } from '../types/ChatSocket.types';
-import { ChatType, Member, MemberConstructor } from '../../chat';
+import { ChatType, Member, MemberConstructor, Message } from '../../chat';
 
 export class ChatSocket extends BaseSocket {
   constructor(props: ChatSocketConstructor) {
     super(props);
-    this.addEvent(ChatSocketEvent.MESSAGE);
+    this.addEvent(ChatSocketEvent.MESSAGE, (message: any) => new Message(props.client, message));
     this.addEvent(ChatSocketEvent.MEMBER_EDIT);
     this.addEvent(ChatSocketEvent.CHAT_DELETE);
     this.addEvent(ChatSocketEvent.MEMBER_ONLINE);

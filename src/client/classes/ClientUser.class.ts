@@ -63,8 +63,8 @@ export class ClientUser {
     this._tag = props.tag;
     this._description = props.description;
     this._mail = props.mail;
-    this.createdAt = props.createdAt;
-    this._lastSeen = props.lastSeen;
+    this.createdAt = new Date(props.createdAt);
+    this._lastSeen = new Date(props.lastSeen);
     this._online = props.online;
     this._locale = props.locale as Locale;
     this._avatar = props.avatar;
@@ -105,6 +105,7 @@ export class ClientUser {
           ...banned,
           user: { ...banned, avatar: banned.avatarURL },
         })),
+        memberLog: [...chat.memberLog.values()],
       });
       this._chats.set(data.uuid, group);
     });

@@ -1,4 +1,11 @@
+import { Client } from '../../client';
+
 export interface BaseSocketConstructor {
+  /**
+   * Client who initialized the socket
+   */
+
+  client: Client;
   /**
    * Token of the user
    */

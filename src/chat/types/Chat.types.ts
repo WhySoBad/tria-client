@@ -1,5 +1,6 @@
-import { MemberConstructor } from "./Member.types";
-import { MessageContstructor } from "./Message.types";
+import { MemberConstructor } from './Member.types';
+import { MemberLogConstructor } from './MemberLog.types';
+import { MessageContstructor } from './Message.types';
 
 export enum ChatType {
   /**
@@ -35,6 +36,12 @@ export interface ChatConstructor {
   type: ChatType;
 
   /**
+   * Date when the chat was created
+   */
+
+  createdAt: Date;
+
+  /**
    * Name of the chat
    */
 
@@ -63,6 +70,12 @@ export interface ChatConstructor {
    */
 
   messages: Array<MessageContstructor>;
+
+  /**
+   * MemberLog of the chat
+   */
+
+  memberLog: Array<MemberLogConstructor>;
 }
 
 export interface ChatEdit {
@@ -97,6 +110,4 @@ export interface ChatEdit {
   description: string | null;
 }
 
-export interface ChatPreview {
-  
-}
+export interface ChatPreview {}

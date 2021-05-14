@@ -16,7 +16,7 @@ export class Admin extends Member {
 
   constructor(constructor: AdminConstructor) {
     super(constructor);
-    this.promotedAt = constructor.promotedAt;
+    this.promotedAt = new Date(constructor.promotedAt);
     this.permissions = constructor.permissions;
   }
 

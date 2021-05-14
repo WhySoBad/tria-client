@@ -22,7 +22,7 @@ interface UserRequests {
   PASSWORD_RESET_CONFIRM: { body: { token: string; password: string } };
   DELETE: { authorization: string };
   GET_CURRENT: { authorization: string };
-  GET_PREVIEW: { body: { uuid: string } };
+  GET_PREVIEW: { uuid: string };
   GET_AVATAR: { uuid: string };
   UPLOAD_AVATAR: { authorization: string; body: { formData: FormData } }; //TODO: Look after how to upload formdata with axios and implement it into the manager
   DELETE_AVATAR: { authorization: string };

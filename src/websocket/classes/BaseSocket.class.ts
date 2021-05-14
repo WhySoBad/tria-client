@@ -35,7 +35,8 @@ export abstract class BaseSocket extends EventEmitter {
     return new Promise((resolve, reject) => {
       if (this._connected) reject('Already Connected');
       this.socket = connect(this.url, {
-        transportOptions: { polling: { extraHeaders: { Authorization: `Bearer ${this.token}` } } },
+        transportOptions: { websocket: { extraHeaders: { cookie: `token=${this.token}` } } },
+        transports: ['websocket'], //disabled polling beacuse of CORS error [https://github.com/socketio/socket.io-client/issues/641] for local usage
       });
 
       this.socket.once('connect', () => {

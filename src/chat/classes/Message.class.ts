@@ -51,9 +51,9 @@ export class Message {
     this.client = client;
     this.uuid = props.uuid;
     this.chat = props.chat;
-    this.createdAt = props.createdAt;
+    this.createdAt = new Date(props.createdAt);
     this.sender = props.sender;
-    this._editedAt = props.editedAt;
+    this._editedAt = props.editedAt ? new Date(props.editedAt) : null;
     this._edited = props.edited;
     this._text = props.text;
     this._pinned = props.pinned;

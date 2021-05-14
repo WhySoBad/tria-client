@@ -21,6 +21,7 @@ interface ChatRequests {
   ADMIN_BAN: { uuid: string; body: { uuid: string }; authorization: string };
   ADMIN_UNBAN: { uuid: string; body: {}; authorization: string };
   ADMIN_KICK: { uuid: string; body: {}; authorization: string };
+  FETCH_MESSAGES: { uuid: string; timestamp: string; amount: string; authorization: string };
 }
 
 /**
@@ -40,5 +41,6 @@ export class ChatRequestManager extends RequestManager<ChatRequests> {
     this.addRequest<'ADMIN_BAN'>('ADMIN_BAN', '%uuid/admin/ban', 'POST');
     this.addRequest<'ADMIN_UNBAN'>('ADMIN_UNBAN', '%uuid/admin/unban', 'POST');
     this.addRequest<'ADMIN_KICK'>('ADMIN_KICK', '%uuid/admin/kick', 'POST');
+    this.addRequest<'FETCH_MESSAGES'>('FETCH_MESSAGES', '%uuid/messages/%timestamp/%amount', 'GET');
   }
 }

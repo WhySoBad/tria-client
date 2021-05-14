@@ -60,8 +60,8 @@ export class User {
     this.uuid = props.uuid;
     this.name = props.name;
     this.tag = props.tag;
-    this.createdAt = props.createdAt;
-    this.lastSeen = props.lastSeen;
+    this.createdAt = new Date(props.createdAt);
+    this.lastSeen = new Date(props.lastSeen);
     this.description = props.description;
     this.locale = props.locale;
     this.online = props.online;

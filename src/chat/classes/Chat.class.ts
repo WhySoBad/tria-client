@@ -6,6 +6,8 @@ import { Collection } from '../../util/Collection.class';
 import { ChatSocketEvent } from '../../websocket';
 import { Message, Member } from '../classes';
 import { ChatConstructor, ChatType, MemberConstructor, MessageContstructor } from '../types';
+import { MemberLogConstructor } from '../types/MemberLog.types';
+import { MemberLog } from './MemberLog.class';
 
 const chatManager: ChatRequestManager = new ChatRequestManager();
 
@@ -28,27 +30,62 @@ export abstract class Chat {
 
   public readonly type: ChatType;
 
+  /**
+   * Date when the chat was created
+   */
+
+  public readonly createdAt: Date;
+
   protected _members: Map<string, Member> = new Map<string, Member>();
 
   protected _messages: Map<string, Message> = new Map<string, Message>();
 
-  constructor(client: Client, { uuid, members, messages, type }: ChatConstructor) {
+  protected _memberLog: Map<string, MemberLog> = new Map<string, MemberLog>();
+
+  protected _lastFetched: boolean = false;
+
+  constructor(
+    client: Client,
+    { uuid, members, messages, type, memberLog, createdAt }: ChatConstructor
+  ) {
     this.client = client;
     this.uuid = uuid;
     this.type = type;
+    this.createdAt = createdAt;
     members.forEach((member: MemberConstructor) => {
       this._members.set(member.user.uuid, new Member(member));
     });
     messages.forEach((message: MessageContstructor) => {
       this._messages.set(message.uuid, new Message(this.client, message));
     });
+    memberLog.forEach((memberLog: MemberLogConstructor) => {
+      this._memberLog.set(
+        memberLog.user,
+        new MemberLog({ ...memberLog, timestamp: new Date(memberLog.timestamp) })
+      );
+    });
 
     this.client.raw.on(ChatSocketEvent.MEMBER_LEAVE, (chat: string, member: string) => {
-      if (chat === this.uuid) this._members.delete(member);
+      if (chat !== this.uuid) return;
+      this._members.delete(member);
+      this._memberLog.set(
+        member,
+        new MemberLog({ user: member, chat: this.uuid, timestamp: new Date(), joined: false })
+      );
     });
 
     this.client.raw.on(ChatSocketEvent.MEMBER_JOIN, (chat: string, member: Member) => {
-      if (chat === this.uuid) this._members.set(member.user.uuid, member);
+      if (chat !== this.uuid) return;
+      this._members.set(member.user.uuid, member);
+      this._memberLog.set(
+        member.user.uuid,
+        new MemberLog({
+          user: member.user.uuid,
+          chat: this.uuid,
+          timestamp: new Date(),
+          joined: true,
+        })
+      );
     });
 
     this.client.raw.on(ChatSocketEvent.MESSAGE, (message: Message) => {
@@ -116,6 +153,24 @@ export abstract class Chat {
   }
 
   /**
+   * Boolean whether the last message of the chat were fetched
+   *
+   * @default false
+   */
+
+  public get lastFetched(): boolean {
+    return this._lastFetched;
+  }
+
+  /**
+   * Member log of the chat
+   */
+
+  public get memberLog(): Collection<string, MemberLog> {
+    return new Collection<string, MemberLog>(this._memberLog);
+  }
+
+  /**
    * Delete the chat
    *
    * @returns Promise<void>
@@ -143,7 +198,7 @@ export abstract class Chat {
    */
 
   public sendMessage(message: string): Promise<void> {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (!this.writeable) reject('User Has To Be Member');
       const actionUuid = v4();
       this.client.chat.emit(ChatSocketEvent.MESSAGE, {
@@ -152,6 +207,39 @@ export abstract class Chat {
         data: message,
       });
       handleAction(this.client, actionUuid).then(resolve).catch(reject);
+    });
+  }
+
+  /**
+   * Fetch a specific amount of messages after a certain timestamp
+   *
+   * @param timestamp timestamp older than the message's create date
+   *
+   * @param amount amount of messages
+   *
+   * @returns Promise<void>
+   */
+
+  public fetchMessages(timestamp: number, amount: number = 25): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.writeable) reject('User Has To Be Member');
+      if (this._lastFetched) reject('Last Message Already Fetched');
+      chatManager
+        .sendRequest<'FETCH_MESSAGES'>('FETCH_MESSAGES', {
+          uuid: this.uuid,
+          amount: amount?.toString(),
+          timestamp: timestamp?.toString(),
+          authorization: this.client.token,
+        })
+        .then(({ messages, last }: { messages: Array<MessageContstructor>; last: boolean }) => {
+          if (last) this._lastFetched = true;
+          messages.forEach((constructor: MessageContstructor) => {
+            const message: Message = new Message(this.client, constructor);
+            this._messages.set(message.uuid, message);
+          });
+          resolve();
+        })
+        .catch(reject);
     });
   }
 }

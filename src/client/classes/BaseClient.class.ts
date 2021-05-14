@@ -30,8 +30,6 @@ export abstract class BaseClient extends SocketHandler {
 
   public readonly credentials: Credentials;
 
-  protected _client: Client;
-
   private _user: ClientUser;
 
   private _token: string;

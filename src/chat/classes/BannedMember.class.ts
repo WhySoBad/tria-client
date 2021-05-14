@@ -44,9 +44,9 @@ export class BannedMember {
   public readonly avatarURL: string | null;
 
   constructor({ bannedAt, user }: BannedMemberConstructor) {
-    this.bannedAt = bannedAt;
+    this.bannedAt = new Date(bannedAt);
     this.uuid = user.uuid;
-    this.createdAt = user.createdAt;
+    this.createdAt = new Date(user.createdAt);
     this.name = user.name;
     this.tag = user.tag;
     this.description = user.description;

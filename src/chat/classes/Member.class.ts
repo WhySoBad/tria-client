@@ -22,7 +22,7 @@ export class Member {
 
   constructor(props: MemberConstructor) {
     this.user = props.user instanceof User ? props.user : new User(props.user);
-    this.joinedAt = props.joinedAt;
+    this.joinedAt = new Date(props.joinedAt);
     this.role = props.role;
   }
 }

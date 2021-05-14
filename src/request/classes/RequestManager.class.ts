@@ -98,6 +98,7 @@ export abstract class RequestManager<
           path = path.replace(`%${key}`, `${value}`);
         }
       });
+
       const token: string | null = (props && props.authorization) || null;
       config.headers = { ...config.headers, ...options, Authorization: `Bearer ${token}` };
       if (method === 'POST') {

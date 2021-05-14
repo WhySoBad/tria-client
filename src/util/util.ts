@@ -17,10 +17,7 @@ const chatManager: ChatRequestManager = new ChatRequestManager();
 
 export const loginUser = (credentials: Credentials): Promise<string> => {
   return new Promise((resolve, reject) => {
-    authManager
-      .sendRequest<'LOGIN'>('LOGIN', { body: credentials })
-      .then(resolve)
-      .catch(reject);
+    authManager.sendRequest<'LOGIN'>('LOGIN', { body: credentials }).then(resolve).catch(reject);
   });
 };
 
@@ -167,7 +164,7 @@ export const confirmPasswordReset = (token: string, password: string): Promise<v
 export const getUserPreview = (uuid: string): Promise<UserPreview> => {
   return new Promise((resolve, reject) => {
     userManager
-      .sendRequest<'GET_PREVIEW'>('GET_PREVIEW', { body: { uuid: uuid } })
+      .sendRequest<'GET_PREVIEW'>('GET_PREVIEW', { uuid: uuid })
       .then(resolve)
       .catch(reject);
   });
