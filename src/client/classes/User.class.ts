@@ -65,6 +65,6 @@ export class User {
     this.description = props.description;
     this.locale = props.locale;
     this.online = props.online;
-    this.avatarURL = props.avatar ? `${config.apiUrl}/user/${props.avatar}/avatar` : null;
+    this.avatarURL = props.avatar ? `${config.apiUrl}/user/${props.uuid}/avatar` : null;
   }
 }
