@@ -1,3 +1,4 @@
+import { colorForUuid } from '../../util';
 import { config } from '../../util/config';
 import { UserConstructor } from '../types';
 
@@ -56,10 +57,17 @@ export class User {
 
   public readonly online: boolean;
 
+  /**
+   * Hex color of the user
+   */
+
+  public readonly color: string;
+
   constructor(props: UserConstructor) {
     this.uuid = props.uuid;
     this.name = props.name;
     this.tag = props.tag;
+    this.color = colorForUuid(this.uuid);
     this.createdAt = new Date(props.createdAt);
     this.lastSeen = new Date(props.lastSeen);
     this.description = props.description;

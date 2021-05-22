@@ -110,4 +110,13 @@ export interface ChatEdit {
   description: string | null;
 }
 
-export interface ChatPreview {}
+export interface ChatPreview {
+  uuid: string;
+  type: ChatType;
+  description: string;
+  name: string;
+  tag: string;
+  size: number;
+  online: number;
+  color: string;
+}

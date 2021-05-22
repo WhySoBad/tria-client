@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { Client } from '../../client';
 import { ChatRequestManager } from '../../request';
-import { handleAction } from '../../util';
+import { colorForUuid, handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
 import { ChatSocketEvent } from '../../websocket';
 import { Message, Member } from '../classes';
@@ -36,6 +36,12 @@ export abstract class Chat {
 
   public readonly createdAt: Date;
 
+  /**
+   * Hex color of the chat
+   */
+
+  public readonly color: string;
+
   protected _members: Map<string, Member> = new Map<string, Member>();
 
   protected _messages: Map<string, Message> = new Map<string, Message>();
@@ -52,6 +58,8 @@ export abstract class Chat {
     this.uuid = uuid;
     this.type = type;
     this.createdAt = createdAt;
+    this.color = colorForUuid(uuid);
+
     members.forEach((member: MemberConstructor) => {
       this._members.set(member.user.uuid, new Member(member));
     });
@@ -113,7 +121,11 @@ export abstract class Chat {
       if (this._members.get(uuid)) {
         const member: Member | undefined = this._members.get(uuid);
         if (!member) client.error('Failed To Change User Status');
-        else this._members.set(uuid, { ...member, user: { ...member.user, online: true } });
+        else
+          this._members.set(uuid, {
+            ...member,
+            user: { ...member.user, color: member.user.color, online: true },
+          });
       }
     });
 
@@ -121,7 +133,11 @@ export abstract class Chat {
       if (this._members.get(uuid)) {
         const member: Member | undefined = this._members.get(uuid);
         if (!member) client.error('Failed To Change User Status');
-        else this._members.set(uuid, { ...member, user: { ...member.user, online: false } });
+        else
+          this._members.set(uuid, {
+            ...member,
+            user: { ...member.user, color: member.user.color, online: false },
+          });
       }
     });
   }

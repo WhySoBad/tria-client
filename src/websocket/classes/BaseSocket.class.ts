@@ -72,9 +72,14 @@ export abstract class BaseSocket extends EventEmitter {
         this._events.forEach((handler: ((args?: Array<any>) => any) | undefined, key: string) => {
           this.socket.on(key, (...args: Array<any>) => {
             if (handler) {
-              const value: any = handler(...args);
-              this.emit(key, value);
-              this.emit('*', key, value);
+              const value: any | Array<any> = handler(...args);
+              if (Array.isArray(value)) {
+                this.emit(key, ...value);
+                this.emit('*', key, ...value);
+              } else {
+                this.emit(key, value);
+                this.emit('*', key, value);
+              }
             } else {
               this.emit(key, ...args);
               this.emit('*', key, ...args);

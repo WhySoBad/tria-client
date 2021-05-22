@@ -33,10 +33,7 @@ export class ChatSocket extends BaseSocket {
       })
     );
 
-    this.addEvent(
-      ChatSocketEvent.MEMBER_JOIN,
-      (member: { chat: string; user: MemberConstructor }) => [member.chat, new Member(member.user)]
-    );
+    this.addEvent(ChatSocketEvent.MEMBER_JOIN, (member) => [member.chat, new Member(member)]);
     this.addEvent(ChatSocketEvent.MEMBER_LEAVE, (member: { chat: string; user: string }) => [
       member.chat,
       member.user,
