@@ -1,3 +1,4 @@
+import { colorForUuid } from '../../util';
 import { BannedMemberConstructor } from '../types/BannedMember.types';
 
 export class BannedMember {
@@ -43,6 +44,12 @@ export class BannedMember {
 
   public readonly avatarURL: string | null;
 
+  /**
+   * Hex color of the user
+   */
+
+  public readonly color: string;
+
   constructor({ bannedAt, user }: BannedMemberConstructor) {
     this.bannedAt = new Date(bannedAt);
     this.uuid = user.uuid;
@@ -51,5 +58,6 @@ export class BannedMember {
     this.tag = user.tag;
     this.description = user.description;
     this.avatarURL = user.avatar;
+    this.color = colorForUuid(this.uuid);
   }
 }

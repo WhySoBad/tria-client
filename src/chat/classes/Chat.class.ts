@@ -57,7 +57,7 @@ export abstract class Chat {
     this.client = client;
     this.uuid = uuid;
     this.type = type;
-    this.createdAt = createdAt;
+    this.createdAt = new Date(createdAt);
     this.color = colorForUuid(uuid);
 
     members.forEach((member: MemberConstructor) => {
