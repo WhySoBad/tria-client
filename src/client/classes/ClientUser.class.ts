@@ -10,6 +10,7 @@ import {
   PrivateChatConstructor,
 } from '../../chat';
 import { ChatRequestManager, UserRequestManager } from '../../request';
+import { colorForUuid } from '../../util';
 import { Collection } from '../../util/Collection.class';
 import { config } from '../../util/config';
 import { ChatSocketEvent } from '../../websocket';
@@ -37,6 +38,12 @@ export class ClientUser {
    */
 
   public readonly createdAt: Date;
+
+  /**
+   * Hex color of the user
+   */
+
+  public readonly color: string;
 
   private _name: string;
 
@@ -68,6 +75,7 @@ export class ClientUser {
     this._online = props.online;
     this._locale = props.locale as Locale;
     this._avatar = props.avatar;
+    this.color = colorForUuid(this.uuid);
 
     props.chats.forEach((chat: ChatConstructor) => {
       if (chat.type === ChatType.GROUP || chat.type === ChatType.PRIVATE_GROUP) {
