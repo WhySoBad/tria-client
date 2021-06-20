@@ -26,6 +26,8 @@ interface UserRequests {
   GET_AVATAR: { uuid: string };
   UPLOAD_AVATAR: { authorization: string; body: { formData: FormData } }; //TODO: Look after how to upload formdata with axios and implement it into the manager
   DELETE_AVATAR: { authorization: string };
+  CHECK_TAG: { body: { tag: string } };
+  CHECK_MAIL: { body: { mail: string } };
 }
 
 /**
@@ -57,5 +59,7 @@ export class UserRequestManager extends RequestManager<UserRequests> {
     this.addRequest<'GET_AVATAR'>('GET_AVATAR', '%uuid/avatar', 'GET', { responseType: 'blob' });
     this.addRequest<'UPLOAD_AVATAR'>('UPLOAD_AVATAR', 'avatar/upload', 'POST');
     this.addRequest<'DELETE_AVATAR'>('DELETE_AVATAR', 'avatar/delete', 'GET');
+    this.addRequest<'CHECK_TAG'>('CHECK_TAG', 'check/tag', 'POST');
+    this.addRequest<'CHECK_MAIL'>('CHECK_MAIL', 'check/mail', 'POST');
   }
 }

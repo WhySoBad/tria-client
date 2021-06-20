@@ -206,6 +206,57 @@ export const getChatPreview = (uuid: string): Promise<ChatPreview> => {
 };
 
 /**
+ * Check whether a user has a given tag
+ *
+ * @param tag tag to check
+ *
+ * @returns Promise<boolean>
+ */
+
+export const checkUserTag = (tag: string): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    userManager
+      .sendRequest<'CHECK_TAG'>('CHECK_TAG', { body: { tag: tag } })
+      .then((value: any) => resolve(value))
+      .catch(reject);
+  });
+};
+
+/**
+ * Check whether a user is already registered with a given mail address
+ *
+ * @param mail mail address to check
+ *
+ * @returns Promise<boolean>
+ */
+
+export const checkUserMail = (mail: string): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    userManager
+      .sendRequest<'CHECK_MAIL'>('CHECK_MAIL', { body: { mail: mail } })
+      .then((value: any) => resolve(value))
+      .catch(reject);
+  });
+};
+
+/**
+ * Check whether a group has a given tag
+ *
+ * @param tag tag to check
+ *
+ * @returns Promise<boolean>
+ */
+
+export const checkGroupTag = (tag: string): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    chatManager
+      .sendRequest<'CHECK_TAG'>('CHECK_TAG', { body: { tag: tag } })
+      .then((value: any) => resolve(value))
+      .catch(reject);
+  });
+};
+
+/**
  * Function to create delays
  *
  * @param ms delay duration in milliseconds
