@@ -111,12 +111,51 @@ export interface ChatEdit {
 }
 
 export interface ChatPreview {
+  /**
+   * Uuid of the chat
+   */
+
   uuid: string;
+
+  /**
+   * Type of the chat
+   */
+
   type: ChatType;
-  description: string;
-  name: string;
-  tag: string;
+
+  /**
+   * Name of the chat
+   */
+
+  name: string | null;
+
+  /**
+   * Unique tag of the chat
+   */
+
+  tag: string | null;
+
+  /**
+   * Description of the chat
+   */
+
+  description: string | null;
+
+  /**
+   * Amount of members of the chat
+   */
+
   size: number;
+
+  /**
+   * Current online members
+   */
+
   online: number;
+
+  /**
+   * Color of the chat
+   */
+
   color: string;
 }

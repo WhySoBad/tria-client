@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { Client } from '../../client';
+import { Client, Locale, User } from '../../client';
 import { ChatRequestManager } from '../../request';
 import { colorForUuid, handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
@@ -121,11 +121,17 @@ export abstract class Chat {
       if (this._members.get(uuid)) {
         const member: Member | undefined = this._members.get(uuid);
         if (!member) client.error('Failed To Change User Status');
-        else
+        else {
           this._members.set(uuid, {
             ...member,
-            user: { ...member.user, color: member.user.color, online: true },
+            user: new User({
+              ...member.user,
+              avatar: member.user.avatarURL ? member.user.uuid : null,
+              locale: member.user.locale as Locale,
+              online: true,
+            }),
           });
+        }
       }
     });
 
@@ -133,11 +139,17 @@ export abstract class Chat {
       if (this._members.get(uuid)) {
         const member: Member | undefined = this._members.get(uuid);
         if (!member) client.error('Failed To Change User Status');
-        else
+        else {
           this._members.set(uuid, {
             ...member,
-            user: { ...member.user, color: member.user.color, online: false },
+            user: new User({
+              ...member.user,
+              avatar: member.user.avatarURL ? member.user.uuid : null,
+              locale: member.user.locale as Locale,
+              online: false,
+            }),
           });
+        }
       }
     });
   }

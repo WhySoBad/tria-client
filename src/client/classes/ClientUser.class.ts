@@ -39,12 +39,6 @@ export class ClientUser {
 
   public readonly createdAt: Date;
 
-  /**
-   * Hex color of the user
-   */
-
-  public readonly color: string;
-
   private _name: string;
 
   private _tag: string;
@@ -63,6 +57,8 @@ export class ClientUser {
 
   private _chats: Map<string, Chat> = new Map<string, Chat>();
 
+  private _color: string;
+
   constructor(client: Client, props: ClientUserConstructor) {
     this.client = client;
     this.uuid = props.uuid;
@@ -75,7 +71,7 @@ export class ClientUser {
     this._online = props.online;
     this._locale = props.locale as Locale;
     this._avatar = props.avatar;
-    this.color = colorForUuid(this.uuid);
+    this._color = colorForUuid(this.uuid);
 
     props.chats.forEach((chat: ChatConstructor) => {
       if (chat.type === ChatType.GROUP || chat.type === ChatType.PRIVATE_GROUP) {
@@ -197,6 +193,14 @@ export class ClientUser {
 
   public get chats(): Collection<string, Chat> {
     return new Collection<string, Chat>(this._chats);
+  }
+
+  /**
+   * Hex color of the user
+   */
+
+  public get color(): string {
+    return this._color;
   }
 
   /**

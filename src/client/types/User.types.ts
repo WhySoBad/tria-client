@@ -21,7 +21,7 @@ export interface UserConstructor {
    * Avatar of the user
    */
 
-  avatar: string;
+  avatar: string | null;
 
   /**
    * Date when the account was created
