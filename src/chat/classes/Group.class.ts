@@ -1,14 +1,23 @@
 import { v4 } from 'uuid';
 import { Client } from '../../client';
+import { ChatRequestManager } from '../../request';
 import { handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
 import { ChatSocketEvent } from '../../websocket';
 import { Chat } from '../classes';
-import { BannedMemberConstructor, ChatType, GroupConstructor, GroupRole } from '../types';
+import {
+  BannedMemberConstructor,
+  ChatType,
+  EditMemberOptions,
+  GroupConstructor,
+  GroupRole,
+} from '../types';
 import { Admin } from './Admin.class';
 import { BannedMember } from './BannedMember.class';
 import { Member } from './Member.class';
 import { Owner } from './Owner.class';
+
+const chatManager: ChatRequestManager = new ChatRequestManager();
 
 export class Group extends Chat {
   /**
@@ -294,6 +303,100 @@ export class Group extends Chat {
         uuid: actionUuid,
         chat: this.uuid,
         data: { description: description },
+      });
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
+    });
+  }
+
+  /**
+   * Ban a member of the group
+   *
+   * @param member member to be banned
+   *
+   * @returns Promise<void>
+   */
+
+  public banMember(member: Member): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.canKick) reject("User Hasn't The Permission To Ban Members");
+      if (!this.members.get(member.user.uuid)) reject('Member Has To Be Member Of This Group');
+      chatManager
+        .sendRequest<'ADMIN_BAN'>('ADMIN_BAN', {
+          uuid: this.uuid,
+          body: { uuid: member.user.uuid },
+          authorization: this.client.token,
+        })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Unban a banned member of the group
+   *
+   * @param member uuid of the banned member
+   *
+   * @returns Promise<void>
+   */
+
+  public unbanMember(member: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.bannedMembers.get(member)) reject("Member Isn't Banned In This Group");
+      chatManager
+        .sendRequest<'ADMIN_UNBAN'>('ADMIN_UNBAN', {
+          uuid: this.uuid,
+          body: { uuid: member },
+          authorization: this.client.token,
+        })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Kick a member of the group
+   *
+   * @param member member to be kicked
+   *
+   * @returns Promise<void>
+   */
+
+  public kickMember(member: Member): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.canKick) reject("User Hasn't The Permission To Kick Members");
+      if (!this.members.get(member.user.uuid)) reject('Member Has To Be Member Of This Group');
+      chatManager
+        .sendRequest<'ADMIN_KICK'>('ADMIN_KICK', {
+          uuid: this.uuid,
+          body: { uuid: member.user.uuid },
+          authorization: this.client.token,
+        })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Edit a member of the group
+   *
+   * @param member member to be edited
+   *
+   * @param options EditMemberOptions
+   *
+   * @returns Promise<void>
+   */
+
+  public editMember(member: Member, { role, permissions }: EditMemberOptions): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.canKick) reject("User Hasn't The Permission To Edit Members");
+      if (!this.members.get(member.user.uuid)) reject('Member Has To Be Member Of This Group');
+      const actionUuid: string = v4();
+      this.client.chat.emit(ChatSocketEvent.MEMBER_EDIT, {
+        actionUuid: actionUuid,
+        chat: this.uuid,
+        user: member.user.uuid,
+        role: role,
+        permissions: permissions || [],
       });
       handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });

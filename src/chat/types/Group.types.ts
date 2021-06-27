@@ -1,3 +1,4 @@
+import { Permission } from './Admin.types';
 import { BannedMemberConstructor } from './BannedMember.types';
 import { ChatConstructor } from './Chat.types';
 import { GroupRole } from './Member.types';
@@ -45,4 +46,18 @@ export interface GroupProps {
    */
 
   members?: Array<{ uuid: string; role: GroupRole }>;
+}
+
+export interface EditMemberOptions {
+  /**
+   * New role of the member
+   */
+
+  role: GroupRole;
+
+  /**
+   * New permissions of the member
+   */
+
+  permissions?: Array<Permission>;
 }

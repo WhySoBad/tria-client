@@ -19,8 +19,8 @@ interface ChatRequests {
   JOIN: { uuid: string; authorization: string };
   LEAVE: { uuid: string; authorization: string };
   ADMIN_BAN: { uuid: string; body: { uuid: string }; authorization: string };
-  ADMIN_UNBAN: { uuid: string; body: {}; authorization: string };
-  ADMIN_KICK: { uuid: string; body: {}; authorization: string };
+  ADMIN_UNBAN: { uuid: string; body: { uuid: string }; authorization: string };
+  ADMIN_KICK: { uuid: string; body: { uuid: string }; authorization: string };
   FETCH_MESSAGES: { uuid: string; timestamp: string; amount: string; authorization: string };
   CHECK_TAG: { body: { tag: string } };
 }
