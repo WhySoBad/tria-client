@@ -3,6 +3,7 @@ import { Client } from '../../client';
 import { ChatRequestManager } from '../../request';
 import { handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
+import { config } from '../../util/config';
 import { ChatSocketEvent } from '../../websocket';
 import { Chat } from '../classes';
 import {
@@ -145,7 +146,7 @@ export class Group extends Chat {
    */
 
   public get avatarURL(): string | null {
-    return this._avatar;
+    return this._avatar ? `${config.apiUrl}/group/${this._avatar}/avatar` : null;
   }
 
   /**
@@ -323,6 +324,53 @@ export class Group extends Chat {
         data: { description: description },
       });
       handleAction(this.client, actionUuid).then(resolve).catch(reject);
+    });
+  }
+
+  /**
+   * Edit the avatar of the group
+   *
+   * @param avatar FormData of the avatar image
+   *
+   * @returns Promise<void>
+   */
+
+  public setAvatar(avatar: FormData): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chatManager
+        .sendRequest<'UPLOAD_AVATAR'>('UPLOAD_AVATAR', {
+          uuid: this.uuid,
+          authorization: this.client.token,
+          body: {
+            formData: avatar,
+          },
+        })
+        .then(() => {
+          this._avatar = this.uuid;
+          resolve();
+        })
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Delete the avatar of the group
+   *
+   * @returns Promise<void>
+   */
+
+  public deleteAvatar(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chatManager
+        .sendRequest<'DELETE_AVATAR'>('DELETE_AVATAR', {
+          uuid: this.uuid,
+          authorization: this.client.token,
+        })
+        .then(() => {
+          this._avatar = null;
+          resolve();
+        })
+        .catch(reject);
     });
   }
 
