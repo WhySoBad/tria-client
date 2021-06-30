@@ -9,9 +9,9 @@ import { ClientUser } from './ClientUser.class';
 import { Client } from './Client.class';
 import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../../request';
 import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
-import { Logger } from '../../util';
+import { colorForUuid, Logger } from '../../util';
 import { SocketEvent } from '../../websocket';
-import { ChatConstructor, ChatPreview, GroupProps } from '../../chat';
+import { ChatConstructor, ChatPreview, GroupProps, GroupType } from '../../chat';
 import { SearchRequestManager } from '../../request/classes/SearchRequest.class';
 
 const authManager: AuthRequestManager = new AuthRequestManager();
@@ -291,7 +291,17 @@ export abstract class BaseClient extends SocketHandler {
     return new Promise((resolve, reject) => {
       searchManager
         .sendRequest<'SEARCH'>('SEARCH', { authorization: this.token, body: options })
-        .then(resolve)
+        .then((value: Array<ChatPreview | UserPreview>) => {
+          resolve(
+            value.map(({ uuid, color, ...rest }) => {
+              return {
+                uuid: uuid,
+                color: colorForUuid(uuid),
+                ...rest,
+              };
+            })
+          );
+        })
         .catch(reject);
     });
   }

@@ -1,4 +1,4 @@
-import { User, UserConstructor } from "../../client";
+import { User, UserConstructor } from '../../client';
 
 export enum GroupRole {
   /**
@@ -37,5 +37,5 @@ export interface MemberConstructor {
    * User of the member
    */
 
-  user: UserConstructor | User;
+  user: UserConstructor;
 }

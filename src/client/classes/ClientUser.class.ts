@@ -6,6 +6,7 @@ import {
   ChatType,
   Group,
   GroupConstructor,
+  Member,
   PrivateChat,
   PrivateChatConstructor,
 } from '../../chat';
@@ -105,7 +106,24 @@ export class ClientUser {
         avatar: chat.avatarURL,
         description: data.description as string,
         messages: [...chat.messages.values()],
-        members: [...chat.members.values()],
+        members: [
+          ...chat.members.values().map((member: Member) => ({
+            role: member.role,
+            joinedAt: member.joinedAt,
+            user: {
+              avatar: member.user.avatarURL,
+              client: member.user.client,
+              createdAt: member.user.createdAt,
+              description: member.user.description,
+              lastSeen: member.user.lastSeen,
+              locale: member.user.locale as Locale,
+              name: member.user.name,
+              online: member.user.online,
+              tag: member.user.tag,
+              uuid: member.user.uuid,
+            },
+          })),
+        ],
         banned: [...chat.bannedMembers.values()].map((banned: BannedMember) => ({
           ...banned,
           user: { ...banned, avatar: banned.avatarURL },

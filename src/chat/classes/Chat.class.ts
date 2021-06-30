@@ -61,7 +61,10 @@ export abstract class Chat {
     this.color = colorForUuid(uuid);
 
     members.forEach((member: MemberConstructor) => {
-      this._members.set(member.user.uuid, new Member(member));
+      this._members.set(
+        member.user.uuid,
+        new Member({ ...member, user: { ...member.user, client: this.client } })
+      );
     });
     messages.forEach((message: MessageContstructor) => {
       this._messages.set(message.uuid, new Message(this.client, message));

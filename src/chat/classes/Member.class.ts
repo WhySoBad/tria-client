@@ -21,7 +21,7 @@ export class Member {
   public readonly role: GroupRole;
 
   constructor(props: MemberConstructor) {
-    this.user = props.user instanceof User ? props.user : new User(props.user);
+    this.user = new User(props.user);
     this.joinedAt = new Date(props.joinedAt);
     this.role = props.role;
   }

@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { Client } from '../../client';
+import { Client, Locale, User, UserConstructor } from '../../client';
 import { ChatRequestManager } from '../../request';
 import { handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
@@ -12,6 +12,7 @@ import {
   EditMemberOptions,
   GroupConstructor,
   GroupRole,
+  MemberConstructor,
 } from '../types';
 import { Admin } from './Admin.class';
 import { BannedMember } from './BannedMember.class';
@@ -53,13 +54,19 @@ export class Group extends Chat {
         const admin: Admin = new Admin({
           joinedAt: member.joinedAt,
           role: GroupRole.ADMIN,
-          user: member?.user,
+          user: {
+            client: this.client,
+            ...member?.user,
+          },
           permissions: member?.admin?.permissions || member?.permissions,
           promotedAt: member?.admin?.promotedAt || member?.promotedAt,
         });
         this._members.set(admin.user.uuid, admin);
       } else if (member.role === GroupRole.OWNER) {
-        const owner: Owner = new Owner(member);
+        const owner: Owner = new Owner({
+          ...member,
+          user: { client: this.client, ...member.user },
+        });
         this._members.set(owner.user.uuid, owner);
       }
     });
@@ -68,24 +75,45 @@ export class Group extends Chat {
       if (this.uuid !== uuid) return;
       const member: Member | undefined = this._members.get(user);
       if (!member) return this.client.error('Failed To Edit Chat Member');
+      const ctr: UserConstructor = {
+        avatar: member.user.avatarURL,
+        client: member.user.client,
+        createdAt: member.user.createdAt,
+        description: member.user.description,
+        lastSeen: member.user.lastSeen,
+        locale: member.user.locale as Locale,
+        name: member.user.name,
+        online: member.user.online,
+        tag: member.user.tag,
+        uuid: member.user.uuid,
+      };
       switch (role) {
         case GroupRole.OWNER: {
-          const owner: Owner = new Owner({ ...member, role: GroupRole.OWNER });
+          const owner: Owner = new Owner({
+            joinedAt: member.joinedAt,
+            role: GroupRole.OWNER,
+            user: ctr,
+          });
           this._members.set(user, owner);
           break;
         }
         case GroupRole.ADMIN: {
           const admin: Admin = new Admin({
-            ...member,
+            joinedAt: member.joinedAt,
             role: GroupRole.ADMIN,
             permissions: [...permissions],
             promotedAt: new Date(),
+            user: ctr,
           });
           this._members.set(user, admin);
           break;
         }
         case GroupRole.MEMBER: {
-          const newMember: Member = new Member({ ...member, role: GroupRole.MEMBER });
+          const newMember: Member = new Member({
+            joinedAt: member.joinedAt,
+            role: GroupRole.MEMBER,
+            user: ctr,
+          });
           this._members.set(user, newMember);
           break;
         }
