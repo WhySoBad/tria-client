@@ -6,13 +6,21 @@ export class ChatSocket extends BaseSocket {
   constructor(props: ChatSocketConstructor) {
     super(props);
     this.addEvent(ChatSocketEvent.MESSAGE, (message: any) => new Message(props.client, message));
-    this.addEvent(ChatSocketEvent.MEMBER_EDIT);
     this.addEvent(ChatSocketEvent.CHAT_DELETE);
     this.addEvent(ChatSocketEvent.MEMBER_ONLINE);
     this.addEvent(ChatSocketEvent.MEMBER_OFFLINE);
     this.addEvent(ChatSocketEvent.MEMBER_BAN);
     this.addEvent(ChatSocketEvent.MEMBER_UNBAN);
     this.addEvent(ChatSocketEvent.GROUP_CREATE);
+
+    this.addEvent(ChatSocketEvent.MEMBER_EDIT, ({ chat, user, role, permissions }) => [
+      chat,
+      {
+        user: user,
+        role: role,
+        permissions: permissions,
+      },
+    ]);
 
     this.addEvent(ChatSocketEvent.CHAT_EDIT, ({ chat, tag, name, description, type }) => ({
       uuid: chat,
@@ -21,6 +29,7 @@ export class ChatSocket extends BaseSocket {
       description: description,
       type: type,
     }));
+
     this.addEvent(
       ChatSocketEvent.MESSAGE_EDIT,
       ({ chat, message, text, pinned, edited, editedAt }) => ({
@@ -34,10 +43,12 @@ export class ChatSocket extends BaseSocket {
     );
 
     this.addEvent(ChatSocketEvent.MEMBER_JOIN, (member) => [member.chat, new Member(member)]);
+
     this.addEvent(ChatSocketEvent.MEMBER_LEAVE, (member: { chat: string; user: string }) => [
       member.chat,
       member.user,
     ]);
+
     this.addEvent(
       ChatSocketEvent.PRIVATE_CREATE,
       (chat: {

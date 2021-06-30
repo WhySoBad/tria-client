@@ -1,15 +1,23 @@
-import { ClientEvent, ClientUserConstructor, Credentials } from '../types';
+import {
+  ClientEvent,
+  ClientUserConstructor,
+  Credentials,
+  SearchOptions,
+  UserPreview,
+} from '../types';
 import { ClientUser } from './ClientUser.class';
 import { Client } from './Client.class';
 import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../../request';
 import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
 import { Logger } from '../../util';
 import { SocketEvent } from '../../websocket';
-import { ChatConstructor, GroupProps } from '../../chat';
+import { ChatConstructor, ChatPreview, GroupProps } from '../../chat';
+import { SearchRequestManager } from '../../request/classes/SearchRequest.class';
 
 const authManager: AuthRequestManager = new AuthRequestManager();
 const userManager: UserRequestManager = new UserRequestManager();
 const chatManager: ChatRequestManager = new ChatRequestManager();
+const searchManager: SearchRequestManager = new SearchRequestManager();
 
 /**
  * Base for the client class
@@ -266,9 +274,24 @@ export abstract class BaseClient extends SocketHandler {
     return new Promise((resolve, reject) => {
       chatManager
         .sendRequest<'LEAVE'>('LEAVE', { uuid: group, authorization: this.token })
-        .then(() => {
-          resolve();
-        })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Search for new chats or users
+   *
+   * @param options search options
+   *
+   * @returns Promise<Array<ChatPreview | UserPreview>>
+   */
+
+  public search(options: SearchOptions): Promise<Array<ChatPreview | UserPreview>> {
+    return new Promise((resolve, reject) => {
+      searchManager
+        .sendRequest<'SEARCH'>('SEARCH', { authorization: this.token, body: options })
+        .then(resolve)
         .catch(reject);
     });
   }

@@ -14,6 +14,44 @@ export interface Credentials {
   password: string;
 }
 
+export interface SearchOptions {
+  /**
+   * Text to query for
+   */
+
+  text: string;
+
+  /**
+   * Boolean whether users should be searched
+   */
+
+  checkUser?: boolean;
+
+  /**
+   * Boolean whether chats should be searched
+   */
+
+  checkChat?: boolean;
+
+  /**
+   * Boolean whether uuids should be checked
+   */
+
+  checkUuid?: boolean;
+
+  /**
+   * Boolean whether tags should be checked
+   */
+
+  checkTag?: boolean;
+
+  /**
+   * Boolean whether names should be checked
+   */
+
+  checkName?: boolean;
+}
+
 export interface ClientConstructor {
   /**
    * Boolean whether the integrated logger should be used

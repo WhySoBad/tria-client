@@ -74,7 +74,7 @@ export class Group extends Chat {
           const admin: Admin = new Admin({
             ...member,
             role: GroupRole.ADMIN,
-            permissions: [],
+            permissions: [...permissions],
             promotedAt: new Date(),
           });
           this._members.set(user, admin);
