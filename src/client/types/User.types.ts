@@ -1,4 +1,11 @@
+import { Client } from '../classes';
+
 export interface UserConstructor {
+  /**
+   * Logged in client
+   */
+
+  client: Client;
   /**
    * Uuid of the user
    */

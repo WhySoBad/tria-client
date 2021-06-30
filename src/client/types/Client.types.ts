@@ -1,4 +1,5 @@
 import { ChatSocketEvents } from '../../websocket';
+import { UserSocketEvents } from '../../websocket/types/UserSocket.types';
 
 export interface Credentials {
   /**
@@ -74,7 +75,7 @@ export interface ClientConstructor {
 
 export type ConnectionProps = Credentials | string;
 
-export interface ClientEvents extends ChatSocketEvents {
+export interface ClientEvents extends ChatSocketEvents, UserSocketEvents {
   READY: () => void;
 }
 
@@ -92,10 +93,34 @@ export enum ClientEvent {
   CONNECT = 'CONNECT',
 
   /**
-   * WebSocket disconnect event
+   * Disconnect event
    */
 
   DISCONNECT = 'DISCONNECT',
+
+  /**
+   * ChatSocket connect event
+   */
+
+  CHAT_CONNECT = 'CHAT_CONNECT',
+
+  /**
+   * ChatSocket disconnect event
+   */
+
+  CHAT_DISCONNECT = 'CHAT_DISCONNECT',
+
+  /**
+   * UserSocket connect event
+   */
+
+  USER_CONNECT = 'USER_CONNECT',
+
+  /**
+   * UserSocket disconnect event
+   */
+
+  USER_DISCONNECT = 'USER_DISCONNECT',
 
   /**
    * Error event

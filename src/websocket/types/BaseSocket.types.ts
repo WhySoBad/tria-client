@@ -46,7 +46,7 @@ export enum SocketEvent {
   CONNECT = 'CONNECT',
 
   /**
-   * WebSocket disconnect event
+   * Disconnect event
    */
 
   DISCONNECT = 'DISCONNECT',

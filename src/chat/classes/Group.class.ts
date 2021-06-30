@@ -32,6 +32,8 @@ export class Group extends Chat {
 
   private _description: string;
 
+  private _avatar: string | null;
+
   private _banned: Map<string, BannedMember> = new Map<string, BannedMember>();
 
   constructor(client: Client, props: GroupConstructor) {
@@ -40,6 +42,7 @@ export class Group extends Chat {
     else if (props.type === ChatType.GROUP) this.public = true;
     this._name = props.name as any;
     this._tag = props.tag as any;
+    this._avatar = props.avatar;
     this._description = props.description as any;
     props.banned.forEach((member: BannedMemberConstructor) => {
       this._banned.set(member.user.uuid, new BannedMember(member));
@@ -94,7 +97,14 @@ export class Group extends Chat {
       if (!member) return this.client.error('Failed To Edit Banned Member');
       const bannedMember: BannedMember = new BannedMember({
         bannedAt: new Date(),
-        user: { ...member.user, avatar: member.user.avatarURL },
+        user: {
+          uuid: member.user.uuid,
+          avatar: member.user.avatarURL,
+          name: member.user.name,
+          tag: member.user.tag,
+          description: member.user.description,
+          createdAt: member.user.createdAt,
+        },
       });
       this._banned.set(uuid, bannedMember);
       this._members.delete(uuid);
@@ -128,6 +138,14 @@ export class Group extends Chat {
 
   public get description(): string {
     return this._description;
+  }
+
+  /**
+   * Avatar of the group
+   */
+
+  public get avatarURL(): string | null {
+    return this._avatar;
   }
 
   /**
@@ -257,7 +275,7 @@ export class Group extends Chat {
     return new Promise((resolve, reject) => {
       if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
-      this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
+      this.client.socket.chat.emit(ChatSocketEvent.CHAT_EDIT, {
         uuid: actionUuid,
         chat: this.uuid,
         data: { name: name },
@@ -278,7 +296,7 @@ export class Group extends Chat {
     return new Promise((resolve, reject) => {
       if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
-      this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
+      this.client.socket.chat.emit(ChatSocketEvent.CHAT_EDIT, {
         uuid: actionUuid,
         chat: this.uuid,
         data: { tag: tag },
@@ -299,7 +317,7 @@ export class Group extends Chat {
     return new Promise((resolve, reject) => {
       if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
-      this.client.chat.emit(ChatSocketEvent.CHAT_EDIT, {
+      this.client.socket.chat.emit(ChatSocketEvent.CHAT_EDIT, {
         uuid: actionUuid,
         chat: this.uuid,
         data: { description: description },
@@ -391,7 +409,7 @@ export class Group extends Chat {
       if (!this.canKick) reject("User Hasn't The Permission To Edit Members");
       if (!this.members.get(member.user.uuid)) reject('Member Has To Be Member Of This Group');
       const actionUuid: string = v4();
-      this.client.chat.emit(ChatSocketEvent.MEMBER_EDIT, {
+      this.client.socket.chat.emit(ChatSocketEvent.MEMBER_EDIT, {
         actionUuid: actionUuid,
         chat: this.uuid,
         user: member.user.uuid,

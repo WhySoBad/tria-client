@@ -9,6 +9,12 @@ export interface GroupConstructor extends ChatConstructor {
    */
 
   banned: Array<BannedMemberConstructor>;
+
+  /**
+   * Avatar of the group
+   */
+
+  avatar: string | null;
 }
 
 export enum GroupType {
@@ -46,6 +52,12 @@ export interface GroupProps {
    */
 
   members?: Array<{ uuid: string; role: GroupRole }>;
+
+  /**
+   * Avatar of the group
+   */
+
+  avatar: string | null;
 }
 
 export interface EditMemberOptions {

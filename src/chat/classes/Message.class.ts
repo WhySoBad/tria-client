@@ -128,7 +128,7 @@ export class Message {
     return new Promise((resolve, reject) => {
       if (!this.editable) reject('User Is Not Allowed To Edit');
       const actionUuid: string = v4();
-      this.client.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
+      this.client.socket.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
         actionUuid: actionUuid,
         message: this.uuid,
         text: text,
@@ -147,7 +147,7 @@ export class Message {
     return new Promise((resolve, reject) => {
       if (this._pinned) reject('Message Is Already Pinned');
       const actionUuid: string = v4();
-      this.client.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
+      this.client.socket.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
         actionUuid: actionUuid,
         message: this.uuid,
         pinned: true,
@@ -166,7 +166,7 @@ export class Message {
     return new Promise((resolve, reject) => {
       if (!this._pinned) reject('Message Is Not Pinned');
       const actionUuid: string = v4();
-      this.client.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
+      this.client.socket.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
         actionUuid: actionUuid,
         message: this.uuid,
         pinned: false,

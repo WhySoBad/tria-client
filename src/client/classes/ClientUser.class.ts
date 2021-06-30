@@ -102,6 +102,7 @@ export class ClientUser {
         name: data.name as string,
         tag: data.tag as string,
         type: data.type,
+        avatar: chat.avatarURL,
         description: data.description as string,
         messages: [...chat.messages.values()],
         members: [...chat.members.values()],

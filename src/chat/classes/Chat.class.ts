@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { Client, Locale, User } from '../../client';
+import { Client } from '../../client';
 import { ChatRequestManager } from '../../request';
 import { colorForUuid, handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
@@ -116,42 +116,6 @@ export abstract class Chat {
         })
       );
     });
-
-    this.client.raw.on(ChatSocketEvent.MEMBER_ONLINE, (uuid: string) => {
-      if (this._members.get(uuid)) {
-        const member: Member | undefined = this._members.get(uuid);
-        if (!member) client.error('Failed To Change User Status');
-        else {
-          this._members.set(uuid, {
-            ...member,
-            user: new User({
-              ...member.user,
-              avatar: member.user.avatarURL ? member.user.uuid : null,
-              locale: member.user.locale as Locale,
-              online: true,
-            }),
-          });
-        }
-      }
-    });
-
-    this.client.raw.on(ChatSocketEvent.MEMBER_OFFLINE, (uuid: string) => {
-      if (this._members.get(uuid)) {
-        const member: Member | undefined = this._members.get(uuid);
-        if (!member) client.error('Failed To Change User Status');
-        else {
-          this._members.set(uuid, {
-            ...member,
-            user: new User({
-              ...member.user,
-              avatar: member.user.avatarURL ? member.user.uuid : null,
-              locale: member.user.locale as Locale,
-              online: false,
-            }),
-          });
-        }
-      }
-    });
   }
 
   /**
@@ -229,7 +193,7 @@ export abstract class Chat {
     return new Promise((resolve, reject) => {
       if (!this.writeable) reject('User Has To Be Member');
       const actionUuid = v4();
-      this.client.chat.emit(ChatSocketEvent.MESSAGE, {
+      this.client.socket.chat.emit(ChatSocketEvent.MESSAGE, {
         actionUuid: actionUuid,
         chat: this.uuid,
         data: message,
@@ -256,7 +220,7 @@ export abstract class Chat {
         .sendRequest<'FETCH_MESSAGES'>('FETCH_MESSAGES', {
           uuid: this.uuid,
           amount: amount?.toString(),
-          timestamp: timestamp?.toString(),
+          timestamp: timestamp,
           authorization: this.client.token,
         })
         .then(({ messages, last }: { messages: Array<MessageContstructor>; last: boolean }) => {

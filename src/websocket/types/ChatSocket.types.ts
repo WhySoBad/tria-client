@@ -6,6 +6,10 @@ import { BaseSocketConstructor, SocketEvents } from './BaseSocket.types';
 export interface ChatSocketConstructor extends BaseSocketConstructor {}
 
 export interface ChatSocketEvents extends SocketEvents {
+  CHAT_CONNECT: () => void;
+
+  CHAT_DISCONNECT: () => void;
+
   MESSAGE: (message: Message) => void;
 
   CHAT_EDIT: (chat: ChatEdit) => void;
@@ -48,6 +52,17 @@ export interface ChatSocketEvents extends SocketEvents {
 }
 
 export enum ChatSocketEvent {
+  /**
+   * Connect event
+   */
+
+  CONNECT = 'CHAT_CONNECT',
+
+  /**
+   * Disconnect event
+   */
+
+  DISCONNECT = 'CHAT_DISCONNECT',
   /**
    * Message event
    */
