@@ -76,6 +76,8 @@ export abstract class Chat {
       );
     });
 
+    if (this.messages.size === 0) this._lastFetched = true;
+
     this.client.raw.on(ChatSocketEvent.MEMBER_LEAVE, (chat: string, member: string) => {
       if (chat !== this.uuid) return;
       this._members.delete(member);

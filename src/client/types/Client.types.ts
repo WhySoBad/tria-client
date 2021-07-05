@@ -51,6 +51,12 @@ export interface SearchOptions {
    */
 
   checkName?: boolean;
+
+  /**
+   * Boolean whether the description should be checked
+   */
+
+  checkDescription?: boolean;
 }
 
 export interface ClientConstructor {
