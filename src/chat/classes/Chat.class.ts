@@ -228,14 +228,29 @@ export abstract class Chat {
           timestamp: timestamp,
           authorization: this.client.token,
         })
-        .then(({ messages, last }: { messages: Array<MessageContstructor>; last: boolean }) => {
-          if (last) this._lastFetched = true;
-          messages.forEach((constructor: MessageContstructor) => {
-            const message: Message = new Message(this.client, constructor);
-            this._messages.set(message.uuid, message);
-          });
-          resolve();
-        })
+        .then(
+          (fetched: {
+            messages: Array<MessageContstructor>;
+            log: Array<MemberLogConstructor>;
+            last: boolean;
+          }) => {
+            const { messages, log, last } = fetched;
+            if (last) this._lastFetched = true;
+            messages.forEach((constructor: MessageContstructor) => {
+              const message: Message = new Message(this.client, constructor);
+              this._messages.set(message.uuid, message);
+            });
+
+            log.forEach((constructor: MemberLogConstructor) => {
+              const log: MemberLog = new MemberLog({
+                ...constructor,
+                timestamp: new Date(constructor.timestamp),
+              });
+              this._memberLog.set(log.user, log);
+            });
+            resolve();
+          }
+        )
         .catch(reject);
     });
   }
