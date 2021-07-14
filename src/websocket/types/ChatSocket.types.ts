@@ -10,18 +10,21 @@ export interface ChatSocketEvents extends SocketEvents {
 
   CHAT_DISCONNECT: () => void;
 
-  MESSAGE: (message: Message) => void;
+  MESSAGE: (chat: string, message: Message) => void;
 
-  CHAT_EDIT: (chat: ChatEdit) => void;
+  CHAT_EDIT: (chat: string, edit: ChatEdit) => void;
 
-  MESSAGE_EDIT: (message: {
-    chat: string;
-    uuid: string;
-    text: string;
-    pinned: boolean;
-    edited: number;
-    editedAt: Date;
-  }) => void;
+  MESSAGE_EDIT: (
+    chat: string,
+    message: {
+      chat: string;
+      uuid: string;
+      text: string;
+      pinned: boolean;
+      edited: number;
+      editedAt: Date;
+    }
+  ) => void;
 
   MEMBER_EDIT: (
     chat: string,

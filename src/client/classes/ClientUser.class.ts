@@ -94,7 +94,7 @@ export class ClientUser {
 
     this.client.raw.on(ChatSocketEvent.CHAT_DELETE, (chat: string) => this._chats.delete(chat));
 
-    this.client.raw.on(ChatSocketEvent.CHAT_EDIT, (data: ChatEdit) => {
+    this.client.raw.on(ChatSocketEvent.CHAT_EDIT, (chatUuid: string, data: ChatEdit) => {
       const chat: Chat | undefined = this._chats.get(data.uuid);
       if (!chat) return client.error('Failed To Edit Chat');
       if (!(chat instanceof Group)) return client.error('Chat Has To Be A Group To Be Edited');
@@ -103,8 +103,9 @@ export class ClientUser {
         name: data.name as string,
         tag: data.tag as string,
         type: data.type,
-        avatar: chat.avatarURL,
+        avatar: chat.avatarURL ? chat.uuid : '',
         description: data.description as string,
+        lastRead: chat.lastRead,
         messages: [...chat.messages.values()],
         members: [
           ...chat.members.values().map((member: Member) => ({

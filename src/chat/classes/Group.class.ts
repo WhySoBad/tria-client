@@ -12,7 +12,7 @@ import {
   EditMemberOptions,
   GroupConstructor,
   GroupRole,
-  MemberConstructor,
+  GroupType,
 } from '../types';
 import { Admin } from './Admin.class';
 import { BannedMember } from './BannedMember.class';
@@ -22,11 +22,7 @@ import { Owner } from './Owner.class';
 const chatManager: ChatRequestManager = new ChatRequestManager();
 
 export class Group extends Chat {
-  /**
-   * Boolean whether the group is public or not
-   */
-
-  public readonly public: boolean;
+  private _public: boolean;
 
   private _name: string;
 
@@ -40,8 +36,8 @@ export class Group extends Chat {
 
   constructor(client: Client, props: GroupConstructor) {
     super(client, props);
-    if (props.type === ChatType.PRIVATE_GROUP) this.public = false;
-    else if (props.type === ChatType.GROUP) this.public = true;
+    if (props.type === ChatType.PRIVATE_GROUP) this._public = false;
+    else if (props.type === ChatType.GROUP) this._public = true;
     this._name = props.name as any;
     this._tag = props.tag as any;
     this._avatar = props.avatar;
@@ -65,6 +61,7 @@ export class Group extends Chat {
       } else if (member.role === GroupRole.OWNER) {
         const owner: Owner = new Owner({
           ...member,
+          chat: this.uuid,
           user: { client: this.client, ...member.user },
         });
         this._members.set(owner.user.uuid, owner);
@@ -90,7 +87,7 @@ export class Group extends Chat {
       switch (role) {
         case GroupRole.OWNER: {
           const owner: Owner = new Owner({
-            joinedAt: member.joinedAt,
+            ...member,
             role: GroupRole.OWNER,
             user: ctr,
           });
@@ -99,7 +96,7 @@ export class Group extends Chat {
         }
         case GroupRole.ADMIN: {
           const admin: Admin = new Admin({
-            joinedAt: member.joinedAt,
+            ...member,
             role: GroupRole.ADMIN,
             permissions: [...permissions],
             promotedAt: new Date(),
@@ -110,7 +107,7 @@ export class Group extends Chat {
         }
         case GroupRole.MEMBER: {
           const newMember: Member = new Member({
-            joinedAt: member.joinedAt,
+            ...member,
             role: GroupRole.MEMBER,
             user: ctr,
           });
@@ -174,7 +171,15 @@ export class Group extends Chat {
    */
 
   public get avatarURL(): string | null {
-    return this._avatar ? `${config.apiUrl}/group/${this._avatar}/avatar` : null;
+    return this._avatar ? `${config.apiUrl}/chat/${this._avatar}/avatar` : null;
+  }
+
+  /**
+   * Boolean whether the group is public or not
+   */
+
+  public get public(): boolean {
+    return this._public;
   }
 
   /**
@@ -305,9 +310,9 @@ export class Group extends Chat {
       if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
       this.client.socket.chat.emit(ChatSocketEvent.CHAT_EDIT, {
-        uuid: actionUuid,
+        actionUuid: actionUuid,
         chat: this.uuid,
-        data: { name: name },
+        name: name,
       });
       handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
@@ -326,9 +331,9 @@ export class Group extends Chat {
       if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
       this.client.socket.chat.emit(ChatSocketEvent.CHAT_EDIT, {
-        uuid: actionUuid,
+        actionUuid: actionUuid,
         chat: this.uuid,
-        data: { tag: tag },
+        tag: tag,
       });
       handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });
@@ -347,9 +352,67 @@ export class Group extends Chat {
       if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
       const actionUuid: string = v4();
       this.client.socket.chat.emit(ChatSocketEvent.CHAT_EDIT, {
-        uuid: actionUuid,
+        actionUuid: actionUuid,
         chat: this.uuid,
-        data: { description: description },
+        description: description,
+      });
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
+    });
+  }
+
+  /**
+   * Change the type of the group
+   *
+   * @param type new type of the group
+   *
+   * @returns Promise<void>
+   */
+
+  public setType(type: GroupType): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
+      const isPublic: boolean = type === GroupType.GROUP;
+      if ((this._public && isPublic) || (!this._public && !isPublic)) {
+        reject(`Group Is Already Of Type ${type}`);
+      }
+      const actionUuid: string = v4();
+      this.client.socket.chat.emit(ChatSocketEvent.CHAT_EDIT, {
+        actionUuid: actionUuid,
+        chat: this.uuid,
+        type: type,
+      });
+      handleAction(this.client, actionUuid).then(resolve).catch(reject);
+    });
+  }
+
+  /**
+   * Shorthand function for setName, setTag, setDescription and setType
+   *
+   * to edit multiple parameters with one call
+   *
+   * @param settings new settings
+   *
+   * @returns Promise<void>
+   */
+
+  public setSettings(settings: {
+    description?: string;
+    tag?: string;
+    name?: string;
+    type?: GroupType;
+  }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.canEditGroup) reject("User Hasn't The Permission To Edit The Chat");
+      if (Object.keys(settings).length === 0) reject("Settings Can't Be Empty");
+      const isPublic: boolean = settings.type === GroupType.GROUP;
+      if ((settings.type && this._public && isPublic) || (!this._public && !isPublic)) {
+        reject(`Group Is Already Of Type ${settings.type}`);
+      }
+      const actionUuid: string = v4();
+      this.client.socket.chat.emit(ChatSocketEvent.CHAT_EDIT, {
+        actionUuid: actionUuid,
+        chat: this.uuid,
+        ...settings,
       });
       handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });

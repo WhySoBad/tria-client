@@ -76,6 +76,12 @@ export interface ChatConstructor {
    */
 
   memberLog: Array<MemberLogConstructor>;
+
+  /**
+   * Date when the current user read the chat for the last time
+   */
+
+  lastRead: Date;
 }
 
 export interface ChatEdit {

@@ -50,15 +50,18 @@ export abstract class Chat {
 
   protected _lastFetched: boolean = false;
 
+  protected _lastRead: Date;
+
   constructor(
     client: Client,
-    { uuid, members, messages, type, memberLog, createdAt }: ChatConstructor
+    { uuid, members, messages, type, memberLog, createdAt, lastRead }: ChatConstructor
   ) {
     this.client = client;
     this.uuid = uuid;
     this.type = type;
     this.createdAt = new Date(createdAt);
     this.color = colorForUuid(uuid);
+    this._lastRead = new Date(lastRead);
 
     members.forEach((member: MemberConstructor) => {
       this._members.set(
@@ -101,13 +104,13 @@ export abstract class Chat {
       );
     });
 
-    this.client.raw.on(ChatSocketEvent.MESSAGE, (message: Message) => {
-      if (message.chat === this.uuid) this._messages.set(message.uuid, message);
+    this.client.raw.on(ChatSocketEvent.MESSAGE, (chat: string, message: Message) => {
+      if (chat === this.uuid) this._messages.set(message.uuid, message);
     });
 
-    this.client.raw.on(ChatSocketEvent.MESSAGE_EDIT, (editedMessage) => {
-      const { chat, uuid, edited, editedAt, pinned, text } = editedMessage;
+    this.client.raw.on(ChatSocketEvent.MESSAGE_EDIT, (chat: string, editedMessage) => {
       if (chat !== this.uuid) return;
+      const { uuid, edited, editedAt, pinned, text } = editedMessage;
       const message: Message | undefined = this._messages.get(uuid);
       if (!message) return client.error('Failed To Edit Message');
       this._messages.set(
@@ -121,6 +124,14 @@ export abstract class Chat {
         })
       );
     });
+  }
+
+  /**
+   * Date when the user last read a message in the chat
+   */
+
+  public get lastRead(): Date {
+    return this._lastRead;
   }
 
   /**
@@ -203,7 +214,12 @@ export abstract class Chat {
         chat: this.uuid,
         data: message,
       });
-      handleAction(this.client, actionUuid).then(resolve).catch(reject);
+      handleAction(this.client, actionUuid)
+        .then(() => {
+          this._lastRead = new Date();
+          resolve();
+        })
+        .catch(reject);
     });
   }
 
@@ -252,6 +268,32 @@ export abstract class Chat {
           }
         )
         .catch(reject);
+    });
+  }
+
+  /**
+   * Mark messages until a given timestamp as read
+   *
+   * @param timestamp timestamp to be read to
+   *
+   * @returns Promise<void>
+   */
+
+  public readUntil(timestamp: Date | number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.members.get(this.client.user.uuid)) reject('Invalid User');
+      else
+        chatManager
+          .sendRequest<'READ_MESSAGES'>('READ_MESSAGES', {
+            uuid: this.uuid,
+            timestamp: timestamp instanceof Date ? timestamp.getTime() : timestamp,
+            authorization: this.client.token,
+          })
+          .then(() => {
+            this._lastRead = new Date(timestamp);
+            resolve();
+          })
+          .catch(reject);
     });
   }
 }

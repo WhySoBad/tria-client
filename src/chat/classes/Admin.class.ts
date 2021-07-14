@@ -41,7 +41,7 @@ export class Admin extends Member {
    */
 
   public get canEditGroup(): boolean {
-    return this.permissions.includes(Permission.GROUP_EDIT);
+    return this.permissions.includes(Permission.CHAT_EDIT);
   }
 
   /**

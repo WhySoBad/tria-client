@@ -27,6 +27,7 @@ interface ChatRequests {
   GET_AVATAR: { uuid: string };
   UPLOAD_AVATAR: { uuid: string; authorization: string; body: { formData: FormData } }; //TODO: Look after how to upload formdata with axios and implement it into the manager
   DELETE_AVATAR: { uuid: string; authorization: string };
+  READ_MESSAGES: { uuid: string; timestamp: number; authorization: string };
 }
 
 /**
@@ -46,11 +47,16 @@ export class ChatRequestManager extends RequestManager<ChatRequests> {
     this.addRequest<'ADMIN_BAN'>('ADMIN_BAN', '%uuid/admin/ban', 'POST');
     this.addRequest<'ADMIN_UNBAN'>('ADMIN_UNBAN', '%uuid/admin/unban', 'POST');
     this.addRequest<'ADMIN_KICK'>('ADMIN_KICK', '%uuid/admin/kick', 'POST');
-    this.addRequest<'FETCH_MESSAGES'>('FETCH_MESSAGES', '%uuid/messages/%timestamp/%amount', 'GET');
+    this.addRequest<'FETCH_MESSAGES'>(
+      'FETCH_MESSAGES',
+      '%uuid/messages/get/%timestamp/%amount',
+      'GET'
+    );
     this.addRequest<'CHECK_TAG'>('CHECK_TAG', 'check/tag', 'POST');
     this.addRequest<'LAST_READ'>('LAST_READ', '%uuid/messages/read/%timestamp', 'GET');
     this.addRequest<'GET_AVATAR'>('GET_AVATAR', '%uuid/avatar', 'GET');
     this.addRequest<'UPLOAD_AVATAR'>('UPLOAD_AVATAR', '%uuid/avatar/upload', 'POST');
     this.addRequest<'DELETE_AVATAR'>('DELETE_AVATAR', '%uuid/avatar/delete', 'GET');
+    this.addRequest<'READ_MESSAGES'>('READ_MESSAGES', '%uuid/messages/read/%timestamp', 'GET');
   }
 }

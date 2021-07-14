@@ -18,6 +18,6 @@ export enum Permission {
   KICK = 'KICK', //kick users
   BAN = 'BAN', //ban users
   UNBAN = 'UNBAN', //unban users
-  GROUP_EDIT = 'GROUP_EDIT', //edit chat
+  CHAT_EDIT = 'CHAT_EDIT', //edit chat
   MEMBER_EDIT = 'MEMBER_EDIT', //edit users
 }
