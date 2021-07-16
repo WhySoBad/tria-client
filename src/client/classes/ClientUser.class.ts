@@ -94,46 +94,6 @@ export class ClientUser {
 
     this.client.raw.on(ChatSocketEvent.CHAT_DELETE, (chat: string) => this._chats.delete(chat));
 
-    this.client.raw.on(ChatSocketEvent.CHAT_EDIT, (chatUuid: string, data: ChatEdit) => {
-      const chat: Chat | undefined = this._chats.get(data.uuid);
-      if (!chat) return client.error('Failed To Edit Chat');
-      if (!(chat instanceof Group)) return client.error('Chat Has To Be A Group To Be Edited');
-      const group: Group = new Group(chat.client, {
-        ...chat,
-        name: data.name as string,
-        tag: data.tag as string,
-        type: data.type,
-        avatar: chat.avatarURL ? chat.uuid : '',
-        description: data.description as string,
-        lastRead: chat.lastRead,
-        messages: [...chat.messages.values()],
-        members: [
-          ...chat.members.values().map((member: Member) => ({
-            role: member.role,
-            joinedAt: member.joinedAt,
-            user: {
-              avatar: member.user.avatarURL,
-              client: member.user.client,
-              createdAt: member.user.createdAt,
-              description: member.user.description,
-              lastSeen: member.user.lastSeen,
-              locale: member.user.locale as Locale,
-              name: member.user.name,
-              online: member.user.online,
-              tag: member.user.tag,
-              uuid: member.user.uuid,
-            },
-          })),
-        ],
-        banned: [...chat.bannedMembers.values()].map((banned: BannedMember) => ({
-          ...banned,
-          user: { ...banned, avatar: banned.avatarURL },
-        })),
-        memberLog: [...chat.memberLog.values()],
-      });
-      this._chats.set(data.uuid, group);
-    });
-
     this.client.raw.on(ChatSocketEvent.PRIVATE_CREATE, (constructor: PrivateChatConstructor) => {
       this._chats.set(constructor.uuid, new PrivateChat(this.client, constructor));
     });

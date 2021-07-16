@@ -31,31 +31,9 @@ export class ChatSocket extends BaseSocket {
       },
     ]);
 
-    this.addEvent(ChatSocketEvent.CHAT_EDIT, ({ chat, tag, name, description, type }) => [
-      chat,
-      {
-        uuid: chat,
-        tag: tag,
-        name: name,
-        description: description,
-        type: type,
-      },
-    ]);
+    this.addEvent(ChatSocketEvent.CHAT_EDIT, (data) => [data.chat, data]);
 
-    this.addEvent(
-      ChatSocketEvent.MESSAGE_EDIT,
-      ({ chat, message, text, pinned, edited, editedAt }) => [
-        chat,
-        {
-          chat: chat,
-          uuid: message,
-          text: text,
-          pinned: pinned,
-          edited: edited,
-          editedAt: editedAt,
-        },
-      ]
-    );
+    this.addEvent(ChatSocketEvent.MESSAGE_EDIT, (data) => [data.chat, data]);
 
     this.addEvent(ChatSocketEvent.MEMBER_JOIN, (member) => [member.chat, new Member(member)]);
 

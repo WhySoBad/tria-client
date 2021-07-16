@@ -67,6 +67,7 @@ export interface UserPreview {
   tag: string;
   description: string;
   color: string;
+  avatarURL: string | null;
 }
 
 export type Locale = 'EN' | 'DE' | 'FR';

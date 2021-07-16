@@ -166,7 +166,9 @@ export const getUserPreview = (uuid: string): Promise<UserPreview> => {
   return new Promise((resolve, reject) => {
     userManager
       .sendRequest<'GET_PREVIEW'>('GET_PREVIEW', { uuid: uuid })
-      .then((value: any) => resolve({ ...value, color: colorForUuid(uuid) }))
+      .then(({ avatar, ...rest }) =>
+        resolve({ ...rest, color: colorForUuid(uuid), avatarURL: avatar })
+      )
       .catch(reject);
   });
 };
@@ -200,7 +202,9 @@ export const getChatPreview = (uuid: string): Promise<ChatPreview> => {
   return new Promise((resolve, reject) => {
     chatManager
       .sendRequest<'GET_PREVIEW'>('GET_PREVIEW', { uuid: uuid })
-      .then((value: any) => resolve({ ...value, color: colorForUuid(uuid) }))
+      .then(({ avatar, ...rest }) =>
+        resolve({ ...rest, color: colorForUuid(uuid), avatarURL: avatar })
+      )
       .catch(reject);
   });
 };

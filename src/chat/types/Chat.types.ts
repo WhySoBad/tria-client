@@ -114,6 +114,12 @@ export interface ChatEdit {
    */
 
   description: string | null;
+
+  /**
+   * Avatar url of the chat
+   */
+
+  avatar: string | null;
 }
 
 export interface ChatPreview {
@@ -164,4 +170,10 @@ export interface ChatPreview {
    */
 
   color: string;
+
+  /**
+   * URL to the avatar of the chat
+   */
+
+  avatarURL: string;
 }

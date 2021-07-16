@@ -8,6 +8,7 @@ import { ChatSocketEvent } from '../../websocket';
 import { Chat } from '../classes';
 import {
   BannedMemberConstructor,
+  ChatEdit,
   ChatType,
   EditMemberOptions,
   GroupConstructor,
@@ -139,6 +140,16 @@ export class Group extends Chat {
     this.client.raw.on(ChatSocketEvent.MEMBER_UNBAN, (chat: string, uuid: string) => {
       if (chat !== this.uuid) return;
       this._banned.delete(uuid);
+    });
+
+    this.client.raw.on(ChatSocketEvent.CHAT_EDIT, (chat: string, data: ChatEdit) => {
+      if (chat !== this.uuid) return;
+      this._name = data.name as any;
+      this._tag = data.tag as any;
+      this._description = data.description as any;
+      this._type = data.type;
+      if (data.type === ChatType.GROUP) this._public = true;
+      else this._public = false;
     });
   }
 

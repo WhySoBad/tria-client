@@ -25,12 +25,6 @@ export abstract class Chat {
   public readonly uuid: string;
 
   /**
-   * Type of the chat
-   */
-
-  public readonly type: ChatType;
-
-  /**
    * Date when the chat was created
    */
 
@@ -41,6 +35,8 @@ export abstract class Chat {
    */
 
   public readonly color: string;
+
+  protected _type: ChatType;
 
   protected _members: Map<string, Member> = new Map<string, Member>();
 
@@ -58,7 +54,7 @@ export abstract class Chat {
   ) {
     this.client = client;
     this.uuid = uuid;
-    this.type = type;
+    this._type = type;
     this.createdAt = new Date(createdAt);
     this.color = colorForUuid(uuid);
     this._lastRead = new Date(lastRead);
@@ -124,6 +120,14 @@ export abstract class Chat {
         })
       );
     });
+  }
+
+  /**
+   * Type of the chat
+   */
+
+  public get type(): ChatType {
+    return this._type;
   }
 
   /**
