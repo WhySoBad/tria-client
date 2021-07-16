@@ -22,14 +22,7 @@ export class ChatSocket extends BaseSocket {
     );
     this.addEvent(ChatSocketEvent.GROUP_CREATE);
 
-    this.addEvent(ChatSocketEvent.MEMBER_EDIT, ({ chat, user, role, permissions }) => [
-      chat,
-      {
-        user: user,
-        role: role,
-        permissions: permissions,
-      },
-    ]);
+    this.addEvent(ChatSocketEvent.MEMBER_EDIT, ({ chat, ...rest }) => [chat, rest]);
 
     this.addEvent(ChatSocketEvent.CHAT_EDIT, (data) => [data.chat, data]);
 

@@ -272,6 +272,36 @@ export class ClientUser {
   }
 
   /**
+   * Shorthand function for setName, setTag, setDescription and setLocale
+   *
+   * to edit multiple parameters with one call
+   *
+   * @param settings new settings
+   *
+   * @returns Promise<void>
+   */
+
+  public setSettings(settings: {
+    name?: string;
+    tag?: string;
+    description?: string;
+    locale?: Locale;
+  }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      userManager
+        .sendRequest<'EDIT'>('EDIT', { authorization: this.client.token, body: settings })
+        .then(() => {
+          this._name = settings.name || this._name;
+          this._tag = settings.tag || this._tag;
+          this._description = settings.description || this._description;
+          this._locale = settings.locale || this._locale;
+          resolve();
+        })
+        .catch(reject);
+    });
+  }
+
+  /**
    * Edit the avatar of the user
    *
    * @param avatar FormData of the avatar image
