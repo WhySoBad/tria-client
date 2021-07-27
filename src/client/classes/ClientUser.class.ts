@@ -1,8 +1,6 @@
 import {
-  BannedMember,
   Chat,
   ChatConstructor,
-  ChatEdit,
   ChatType,
   Group,
   GroupConstructor,
@@ -86,6 +84,25 @@ export class ClientUser {
 
     this.client.raw.on(ChatSocketEvent.MEMBER_LEAVE, (chat: string, member: string) => {
       if (member === this.uuid) this._chats.delete(chat);
+    });
+
+    this.client.raw.on(ChatSocketEvent.MEMBER_JOIN, async (chat: string, member: Member) => {
+      if (member.user.uuid !== this.uuid || this.chats.get(chat)) return;
+      const constructor: ChatConstructor = await chatManager
+        .sendRequest<'GET'>('GET', {
+          uuid: chat,
+          authorization: this.client.token,
+        })
+        .catch(client.error);
+      if (constructor) {
+        if (constructor.type === ChatType.GROUP || constructor.type === ChatType.PRIVATE_GROUP) {
+          const group: Group = new Group(this.client, constructor as GroupConstructor);
+          this._chats.set(group.uuid, group);
+        } else if (constructor.type === ChatType.PRIVATE) {
+          const privateChat: PrivateChat = new PrivateChat(this.client, constructor);
+          this._chats.set(privateChat.uuid, privateChat);
+        }
+      }
     });
 
     this.client.raw.on(ChatSocketEvent.MEMBER_BAN, (chat: string, member: string) => {

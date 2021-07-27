@@ -10,9 +10,10 @@ import { Client } from './Client.class';
 import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../../request';
 import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
 import { colorForUuid, Logger } from '../../util';
-import { SocketEvent } from '../../websocket';
-import { ChatConstructor, ChatPreview, GroupProps } from '../../chat';
+import { ChatSocketEvent, SocketEvent } from '../../websocket';
+import { ChatConstructor, ChatPreview, GroupProps, Member } from '../../chat';
 import { SearchRequestManager } from '../../request/classes/SearchRequest.class';
+import { config } from '../../util/config';
 
 const authManager: AuthRequestManager = new AuthRequestManager();
 const userManager: UserRequestManager = new UserRequestManager();
@@ -204,17 +205,17 @@ export abstract class BaseClient extends SocketHandler {
    *
    * @param user uuid of the user on the other side of the private chat
    *
-   * @returns Promise<void>
+   * @returns Promise<string>
    */
 
-  public createPrivateChat(user: string): Promise<void> {
+  public createPrivateChat(user: string): Promise<string> {
     return new Promise((resolve, reject) => {
       chatManager
         .sendRequest<'CREATE_PRIVATE'>('CREATE_PRIVATE', {
           body: { user: user },
           authorization: this.token,
         })
-        .then(() => resolve())
+        .then(resolve)
         .catch(reject);
     });
   }
@@ -224,7 +225,7 @@ export abstract class BaseClient extends SocketHandler {
    *
    * @param props GroupProps to with information about the new group
    *
-   * @returns Promise<void>
+   * @returns Promise<string>
    */
 
   public createGroupChat({
@@ -233,14 +234,14 @@ export abstract class BaseClient extends SocketHandler {
     description,
     type,
     members = [],
-  }: GroupProps): Promise<void> {
+  }: GroupProps): Promise<string> {
     return new Promise((resolve, reject) => {
       chatManager
         .sendRequest<'CREATE_GROUP'>('CREATE_GROUP', {
           body: { name: name, tag: tag, description: description, members: members, type: type },
           authorization: this.token,
         })
-        .then(resolve) //TODO: Add group to chats
+        .then(resolve)
         .catch(reject);
     });
   }
@@ -257,7 +258,16 @@ export abstract class BaseClient extends SocketHandler {
     return new Promise((resolve, reject) => {
       chatManager
         .sendRequest<'JOIN'>('JOIN', { uuid: group, authorization: this.token })
-        .then(resolve)
+        .then(() => {
+          const handler = (chat: string, member: Member) => {
+            if (member.user.uuid === this.client.user.uuid) {
+              handleOff();
+              resolve();
+            }
+          };
+          const handleOff = () => this.client.off(ChatSocketEvent.MEMBER_JOIN, handler);
+          this.client.on(ChatSocketEvent.MEMBER_JOIN, handler);
+        })
         .catch(reject);
     });
   }
@@ -293,18 +303,18 @@ export abstract class BaseClient extends SocketHandler {
         .sendRequest<'SEARCH'>('SEARCH', { authorization: this.token, body: options })
         .then((value: Array<ChatPreview | UserPreview>) => {
           resolve(
-            value
-              .map(({ uuid, color, ...rest }) => {
-                return {
-                  uuid: uuid,
-                  color: colorForUuid(uuid),
-                  ...rest,
-                };
-              })
-              .map((value) => {
-                const { avatar, ...rest }: any = value;
-                return { avatarURL: avatar, ...rest };
-              })
+            value.map(({ uuid, color, ...rest }) => {
+              const { avatar, ...rest2 }: any = rest;
+              const isChat: boolean = Object.keys(rest).includes('type');
+              return {
+                uuid: uuid,
+                color: colorForUuid(uuid),
+                avatarURL: avatar
+                  ? `${config.apiUrl}/${isChat ? 'chat' : 'user'}/${uuid}/avatar`
+                  : null,
+                ...rest2,
+              };
+            })
           );
         })
         .catch(reject);

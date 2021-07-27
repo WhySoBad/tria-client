@@ -296,7 +296,7 @@ export const handleAction = (client: Client, actionUuid: string): Promise<void> 
       if (actionUuid === uuid) {
         client.raw.removeListener(SocketEvent.ACTION_ERROR, handleError);
         client.raw.removeListener(SocketEvent.ACTION_SUCCESS, handleSuccess);
-        reject(error);
+        reject(error.message);
       }
     };
 

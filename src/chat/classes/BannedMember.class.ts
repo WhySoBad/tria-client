@@ -1,4 +1,5 @@
 import { colorForUuid } from '../../util';
+import { config } from '../../util/config';
 import { BannedMemberConstructor } from '../types/BannedMember.types';
 
 export class BannedMember {
@@ -57,7 +58,7 @@ export class BannedMember {
     this.name = user.name;
     this.tag = user.tag;
     this.description = user.description;
-    this.avatarURL = user.avatar;
+    this.avatarURL = user.avatar ? `${config.apiUrl}/user/${this.uuid}/avatar` : null;
     this.color = colorForUuid(this.uuid);
   }
 }

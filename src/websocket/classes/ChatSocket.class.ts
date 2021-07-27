@@ -26,9 +26,15 @@ export class ChatSocket extends BaseSocket {
 
     this.addEvent(ChatSocketEvent.CHAT_EDIT, (data) => [data.chat, data]);
 
-    this.addEvent(ChatSocketEvent.MESSAGE_EDIT, (data) => [data.chat, data]);
+    this.addEvent(ChatSocketEvent.MESSAGE_EDIT, ({ chat, message, ...rest }) => [
+      chat,
+      { chat: chat, uuid: message, ...rest },
+    ]);
 
-    this.addEvent(ChatSocketEvent.MEMBER_JOIN, (member) => [member.chat, new Member(member)]);
+    this.addEvent(ChatSocketEvent.MEMBER_JOIN, (member) => [
+      member.chat,
+      new Member({ ...member, user: { client: props.client, ...member.user } }),
+    ]);
 
     this.addEvent(ChatSocketEvent.MEMBER_LEAVE, (member: { chat: string; user: string }) => [
       member.chat,
