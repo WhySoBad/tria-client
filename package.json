@@ -2,13 +2,12 @@
   "name": "client",
   "version": "1.2.0",
   "description": "",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "prepare": "tsc",
-    "test": "tsc && node dist/test/index.js"
+    "prepare": "tsc"
   },
   "keywords": [],
   "author": "",
