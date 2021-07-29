@@ -24,8 +24,6 @@ const searchManager: SearchRequestManager = new SearchRequestManager();
  * Base for the client class
  *
  * Used for big methods to keep the Client class small
- *
- * @see documentation reference
  */
 
 export abstract class BaseClient extends SocketHandler {

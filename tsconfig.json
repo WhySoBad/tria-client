@@ -4,8 +4,8 @@
     "module": "CommonJS",
     "outDir": "./dist",
     "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "declarationMap": false,
+    "sourceMap": false,
     "importHelpers": true,
     "downlevelIteration": true,
     "stripInternal": true,
@@ -23,8 +23,10 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "pretty": true
   },
-  "include": ["./src/**/*", "./test/**/*"],
-  "exclude": ["node_modules", "./dist/test"]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules"]
 }
