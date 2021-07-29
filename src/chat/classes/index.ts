@@ -6,3 +6,4 @@ export * from './Member.class';
 export * from './Message.class';
 export * from './Owner.class';
 export * from './PrivateChat.class';
+export * from './MemberLog.class';

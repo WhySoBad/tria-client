@@ -290,6 +290,31 @@ export abstract class BaseClient extends SocketHandler {
   }
 
   /**
+   * Change the password using the old password
+   *
+   * @param oldPassword old password
+   *
+   * @param newPassword new password
+   *
+   * @returns Promise<void>
+   */
+
+  public changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      userManager
+        .sendRequest<'PASSWORD_CHANGE'>('PASSWORD_CHANGE', {
+          authorization: this.client.token,
+          body: {
+            new: newPassword,
+            old: oldPassword,
+          },
+        })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  /**
    * Search for new chats or users
    *
    * @param options search options
