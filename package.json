@@ -1,13 +1,13 @@
 {
   "name": "client",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "",
   "main": "dist/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "prepare": "npm i && tsc"
+    "prepack": "tsc"
   },
   "keywords": [],
   "author": "",
