@@ -1,3 +1,10 @@
+import { ChatConstructor, ChatPreview, GroupProps, Member } from '../../chat';
+import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../../request';
+import { SearchRequestManager } from '../../request/classes/SearchRequest.class';
+import { colorForUuid, Logger } from '../../util';
+import { config } from '../../util/config';
+import { ChatSocketEvent, SocketEvent } from '../../websocket';
+import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
 import {
   ClientEvent,
   ClientUserConstructor,
@@ -5,15 +12,8 @@ import {
   SearchOptions,
   UserPreview,
 } from '../types';
-import { ClientUser } from './ClientUser.class';
 import { Client } from './Client.class';
-import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../../request';
-import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
-import { colorForUuid, Logger } from '../../util';
-import { ChatSocketEvent, SocketEvent } from '../../websocket';
-import { ChatConstructor, ChatPreview, GroupProps, Member } from '../../chat';
-import { SearchRequestManager } from '../../request/classes/SearchRequest.class';
-import { config } from '../../util/config';
+import { ClientUser } from './ClientUser.class';
 
 const authManager: AuthRequestManager = new AuthRequestManager();
 const userManager: UserRequestManager = new UserRequestManager();

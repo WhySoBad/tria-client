@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { Client, Locale, User, UserConstructor } from '../../client';
+import { Client, Locale, UserConstructor } from '../../client';
 import { ChatRequestManager } from '../../request';
 import { handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
@@ -18,6 +18,7 @@ import {
 import { Admin } from './Admin.class';
 import { BannedMember } from './BannedMember.class';
 import { Member } from './Member.class';
+import { MemberLog } from './MemberLog.class';
 import { Owner } from './Owner.class';
 
 const chatManager: ChatRequestManager = new ChatRequestManager();
@@ -135,6 +136,10 @@ export class Group extends Chat {
       });
       this._banned.set(uuid, bannedMember);
       this._members.delete(uuid);
+      this._memberLog.set(
+        uuid,
+        new MemberLog({ user: uuid, chat: this.uuid, timestamp: new Date(), joined: false })
+      );
     });
 
     this.client.raw.on(ChatSocketEvent.MEMBER_UNBAN, (chat: string, uuid: string) => {

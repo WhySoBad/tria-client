@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
-import { SocketEvent, BaseSocketConstructor } from '../types';
 import { connect } from 'socket.io-client';
 import { config } from '../../util/config';
+import { BaseSocketConstructor, SocketEvent } from '../types';
 
 export abstract class BaseSocket extends EventEmitter {
   private token: string;

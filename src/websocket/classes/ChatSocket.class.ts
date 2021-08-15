@@ -1,6 +1,6 @@
-import { BaseSocket } from './BaseSocket.class';
-import { ChatSocketConstructor, ChatSocketEvent } from '../types/ChatSocket.types';
 import { ChatType, Member, MemberConstructor, Message } from '../../chat';
+import { ChatSocketConstructor, ChatSocketEvent } from '../types/ChatSocket.types';
+import { BaseSocket } from './BaseSocket.class';
 
 export class ChatSocket extends BaseSocket {
   constructor(props: ChatSocketConstructor) {

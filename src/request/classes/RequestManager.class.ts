@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { config } from '../../util/config';
 import { RequestManagerProps, RequestManagerRequest } from '../types/RequestManager.types';
 

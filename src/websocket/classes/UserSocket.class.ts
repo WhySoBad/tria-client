@@ -1,5 +1,5 @@
-import { BaseSocket } from './BaseSocket.class';
 import { UserSocketConstructor, UserSocketEvent } from '../types/UserSocket.types';
+import { BaseSocket } from './BaseSocket.class';
 
 export class UserSocket extends BaseSocket {
   constructor(props: UserSocketConstructor) {

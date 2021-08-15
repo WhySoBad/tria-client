@@ -4,7 +4,7 @@ import { ChatRequestManager } from '../../request';
 import { colorForUuid, handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
 import { ChatSocketEvent } from '../../websocket';
-import { Message, Member } from '../classes';
+import { Member, Message } from '../classes';
 import { ChatConstructor, ChatType, MemberConstructor, MessageContstructor } from '../types';
 import { MemberLogConstructor } from '../types/MemberLog.types';
 import { MemberLog } from './MemberLog.class';

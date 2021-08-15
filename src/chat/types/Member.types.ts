@@ -1,4 +1,4 @@
-import { User, UserConstructor } from '../../client';
+import { UserConstructor } from '../../client';
 
 export enum GroupRole {
   /**

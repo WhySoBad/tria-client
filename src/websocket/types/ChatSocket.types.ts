@@ -1,6 +1,6 @@
-import { ChatEdit } from '../../chat/types/Chat.types';
-import { Permission } from '../../chat/types/Admin.types';
 import { GroupConstructor, GroupRole, Member, Message, PrivateChatConstructor } from '../../chat';
+import { Permission } from '../../chat/types/Admin.types';
+import { ChatEdit } from '../../chat/types/Chat.types';
 import { BaseSocketConstructor, SocketEvents } from './BaseSocket.types';
 
 export interface ChatSocketConstructor extends BaseSocketConstructor {}
