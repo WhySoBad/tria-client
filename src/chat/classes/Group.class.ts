@@ -121,10 +121,6 @@ export class Group extends Chat {
 
     this.client.raw.on(ChatSocketEvent.MEMBER_BAN, (chat: string, uuid: string) => {
       if (chat !== this.uuid) return;
-      this._memberLog.set(
-        uuid,
-        new MemberLog({ user: uuid, chat: this.uuid, timestamp: new Date(), joined: false })
-      );
       const member: Member | undefined = this._members.get(uuid);
       if (!member) return this.client.error('Failed To Edit Banned Member');
       const bannedMember: BannedMember = new BannedMember({
@@ -138,8 +134,13 @@ export class Group extends Chat {
           createdAt: member.user.createdAt,
         },
       });
+      this._memberLog.set(
+        uuid,
+        new MemberLog({ user: uuid, chat: this.uuid, timestamp: new Date(), joined: false })
+      );
       this._banned.set(uuid, bannedMember);
       this._members.delete(uuid);
+      console.log(this._memberLog);
     });
 
     this.client.raw.on(ChatSocketEvent.MEMBER_UNBAN, (chat: string, uuid: string) => {
