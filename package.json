@@ -7,7 +7,7 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "tsc"
+    "prepack": "npm i && tsc"
   },
   "keywords": [],
   "author": "",
