@@ -140,7 +140,6 @@ export class Group extends Chat {
       );
       this._banned.set(uuid, bannedMember);
       this._members.delete(uuid);
-      console.log(this._memberLog);
     });
 
     this.client.raw.on(ChatSocketEvent.MEMBER_UNBAN, (chat: string, uuid: string) => {

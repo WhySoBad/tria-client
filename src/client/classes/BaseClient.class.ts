@@ -172,6 +172,25 @@ export abstract class BaseClient extends SocketHandler {
   }
 
   /**
+   * Delete the user
+   *
+   * @returns Promise<void>
+   */
+
+  public delete(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.token) reject('No Token Provided');
+      else if (!this.connected) reject('Client Not Connected');
+      else {
+        userManager
+          .sendRequest<'DELETE'>('DELETE', { authorization: this.token })
+          .then(resolve)
+          .catch(reject);
+      }
+    });
+  }
+
+  /**
    * Fetch the user on connection
    *
    * @returns Promise<void>
