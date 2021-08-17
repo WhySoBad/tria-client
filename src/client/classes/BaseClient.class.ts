@@ -151,8 +151,6 @@ export abstract class BaseClient extends SocketHandler {
   /**
    * Log the user out
    *
-   * The current JWT gets banned until it expires
-   *
    * @returns Promise<void>
    */
 
@@ -160,14 +158,7 @@ export abstract class BaseClient extends SocketHandler {
     return new Promise((resolve, reject) => {
       if (!this.token) reject('No Token Provided');
       else if (!this.connected) reject('Client Not Connected');
-      else {
-        authManager
-          .sendRequest<'LOGOUT'>('LOGOUT', { authorization: this.token })
-          .then(() => {
-            this.disconnect().then(resolve).catch(reject);
-          })
-          .catch(reject);
-      }
+      else this.disconnect().then(resolve).catch(reject);
     });
   }
 
