@@ -101,16 +101,38 @@ export abstract class RequestManager<
 
       const token: string | null = (props && props.authorization) || null;
       config.headers = { ...config.headers, ...options, Authorization: `Bearer ${token}` };
-      if (method === 'POST') {
-        this._instance
-          .post(
-            path,
-            props.body.formData ? props.body.formData : (props && props.body) || {},
-            config
-          )
-          .then(resolve)
-          .catch(reject);
-      } else this._instance.get(path, config).then(resolve).catch(reject);
+      switch (method) {
+        case 'POST': {
+          this._instance
+            .post(
+              path,
+              props.body.formData ? props.body.formData : (props && props.body) || {},
+              config
+            )
+            .then(resolve)
+            .catch(reject);
+          break;
+        }
+        case 'PUT': {
+          this._instance
+            .put(
+              path,
+              props.body.formData ? props.body.formData : (props && props.body) || {},
+              config
+            )
+            .then(resolve)
+            .catch(reject);
+          break;
+        }
+        case 'DELETE': {
+          this._instance.delete(path, config).then(resolve).catch(reject);
+          break;
+        }
+        case 'GET': {
+          this._instance.get(path, config).then(resolve).catch(reject);
+          break;
+        }
+      }
     });
   }
 
