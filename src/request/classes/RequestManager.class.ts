@@ -59,7 +59,7 @@ export abstract class RequestManager<
   protected addRequest<K extends keyof T>(
     name: K,
     path: string,
-    method: 'POST' | 'GET',
+    method: 'POST' | 'GET' | 'DELETE' | 'PUT',
     options: AxiosRequestConfig = {}
   ): void {
     this._requests[name as string] = {

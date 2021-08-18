@@ -67,7 +67,7 @@ export const registerUser = ({ password, username }: Credentials): Promise<void>
 export const validateRegister = (token: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     userManager
-      .sendRequest<'REGISTER_VALIDATE'>('REGISTER_VALIDATE', { body: { token: token } })
+      .sendRequest<'REGISTER_VALIDATE'>('REGISTER_VALIDATE', { token: token })
       .then(resolve)
       .catch(reject);
   });
@@ -125,9 +125,7 @@ export const requestPasswordReset = (mail: string): Promise<void> => {
 export const validatePasswordReset = (token: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     userManager
-      .sendRequest<'PASSWORD_RESET_VALIDATE'>('PASSWORD_RESET_VALIDATE', {
-        body: { token: token },
-      })
+      .sendRequest<'PASSWORD_RESET_VALIDATE'>('PASSWORD_RESET_VALIDATE', { token: token })
       .then(resolve)
       .catch(reject);
   });
@@ -220,7 +218,7 @@ export const getChatPreview = (uuid: string): Promise<ChatPreview> => {
 export const checkUserTag = (tag: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     userManager
-      .sendRequest<'CHECK_TAG'>('CHECK_TAG', { body: { tag: tag } })
+      .sendRequest<'CHECK_TAG'>('CHECK_TAG', { tag: tag })
       .then((value: any) => resolve(value))
       .catch(reject);
   });
@@ -237,7 +235,7 @@ export const checkUserTag = (tag: string): Promise<boolean> => {
 export const checkUserMail = (mail: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     userManager
-      .sendRequest<'CHECK_MAIL'>('CHECK_MAIL', { body: { mail: mail } })
+      .sendRequest<'CHECK_MAIL'>('CHECK_MAIL', { mail: mail })
       .then((value: any) => resolve(value))
       .catch(reject);
   });
@@ -254,7 +252,7 @@ export const checkUserMail = (mail: string): Promise<boolean> => {
 export const checkGroupTag = (tag: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     chatManager
-      .sendRequest<'CHECK_TAG'>('CHECK_TAG', { body: { tag: tag } })
+      .sendRequest<'CHECK_TAG'>('CHECK_TAG', { tag: tag })
       .then((value: any) => resolve(value))
       .catch(reject);
   });

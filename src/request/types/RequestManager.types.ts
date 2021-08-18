@@ -11,7 +11,7 @@ export interface RequestManagerRequest {
    * Method of the request
    */
 
-  method: 'GET' | 'POST';
+  method: 'POST' | 'GET' | 'DELETE' | 'PUT';
 
   /**
    * Options for the request
