@@ -26,3 +26,7 @@ or
 ```typescript
 const client: Client = new Client({ log: true, credentials: { token: AUTH_JWT });
 ```
+
+## License 
+
+MIT © [WhySoBad](https://github.com/WhySoBad)
