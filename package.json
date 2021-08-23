@@ -1,5 +1,5 @@
 {
-  "name": "tria-client",
+  "name": "client",
   "version": "1.0.0",
   "description": "Client module for the tria messenger",
   "main": "dist/index.js",
