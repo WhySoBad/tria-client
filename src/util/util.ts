@@ -4,9 +4,19 @@ import { Client, Credentials, Locale, UserPreview } from '../client';
 import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../request';
 import { ActionError, SocketEvent } from '../websocket';
 
-const authManager: AuthRequestManager = new AuthRequestManager();
-const userManager: UserRequestManager = new UserRequestManager();
-const chatManager: ChatRequestManager = new ChatRequestManager();
+let authManager: AuthRequestManager;
+let userManager: UserRequestManager;
+let chatManager: ChatRequestManager;
+
+/**
+ * @internal
+ */
+
+export const initialize = (): void => {
+  authManager = new AuthRequestManager();
+  userManager = new UserRequestManager();
+  chatManager = new ChatRequestManager();
+};
 
 /**
  * @internal
