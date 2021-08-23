@@ -40,6 +40,7 @@ export class Group extends Chat {
     super(client, props);
     if (props.type === ChatType.PRIVATE_GROUP) this._public = false;
     else if (props.type === ChatType.GROUP) this._public = true;
+    if (client.logging) chatManager.enableLogging();
     this._name = props.name as any;
     this._tag = props.tag as any;
     this._avatar = props.avatar;

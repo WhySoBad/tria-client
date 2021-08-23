@@ -72,6 +72,11 @@ export class ClientUser {
     this._avatar = props.avatar;
     this._color = colorForUuid(this.uuid);
 
+    if (this.client.logging) {
+      userManager.enableLogging();
+      chatManager.enableLogging();
+    }
+
     props.chats.forEach((chat: ChatConstructor) => {
       if (chat.type === ChatType.GROUP || chat.type === ChatType.PRIVATE_GROUP) {
         const group: Group = new Group(this.client, chat as GroupConstructor);

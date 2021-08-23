@@ -59,6 +59,8 @@ export abstract class Chat {
     this.color = colorForUuid(uuid);
     this._lastRead = new Date(lastRead);
 
+    if (this.client.logging) chatManager.enableLogging();
+
     members.forEach((member: MemberConstructor) => {
       this._members.set(
         member.user.uuid,

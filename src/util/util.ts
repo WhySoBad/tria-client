@@ -9,6 +9,16 @@ const userManager: UserRequestManager = new UserRequestManager();
 const chatManager: ChatRequestManager = new ChatRequestManager();
 
 /**
+ * @internal
+ */
+
+export const enableLogging = (): void => {
+  authManager.enableLogging();
+  userManager.enableLogging();
+  chatManager.enableLogging();
+};
+
+/**
  * Login a user using the credentials
  *
  * @param credentials credentials of the user

@@ -38,6 +38,12 @@ export abstract class SocketHandler extends (EventEmitter as new () => TypedEven
   protected _client: Client;
 
   /**
+   * Boolean whether logs are enabled or not
+   */
+
+  public readonly logging: boolean;
+
+  /**
    * Subclass to emit and receive events
    */
 
@@ -58,8 +64,9 @@ export abstract class SocketHandler extends (EventEmitter as new () => TypedEven
     },
   };
 
-  constructor(protected logging: boolean) {
+  constructor(logging: boolean) {
     super();
+    this.logging = logging;
     this.setMaxListeners(config.maxListenerCount);
     this.raw.setMaxListeners(config.maxListenerCount);
   }

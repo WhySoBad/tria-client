@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Logger } from '../../util';
 import { config } from '../../util/config';
 import { RequestManagerProps, RequestManagerRequest } from '../types/RequestManager.types';
 
@@ -20,6 +21,8 @@ export abstract class RequestManager<
     ? {}
     : 'Values can only be object or undefined')
 > {
+  private _logging: boolean = false;
+
   private _url: string;
 
   private _instance: AxiosInstance;
@@ -110,6 +113,7 @@ export abstract class RequestManager<
               config
             )
             .then(resolve)
+            .then(() => this._logging && Logger.Request(name))
             .catch(reject);
           break;
         }
@@ -121,15 +125,24 @@ export abstract class RequestManager<
               config
             )
             .then(resolve)
+            .then(() => this._logging && Logger.Request(name))
             .catch(reject);
           break;
         }
         case 'DELETE': {
-          this._instance.delete(path, config).then(resolve).catch(reject);
+          this._instance
+            .delete(path, config)
+            .then(resolve)
+            .then(() => this._logging && Logger.Request(name))
+            .catch(reject);
           break;
         }
         case 'GET': {
-          this._instance.get(path, config).then(resolve).catch(reject);
+          this._instance
+            .get(path, config)
+            .then(resolve)
+            .then(() => this._logging && Logger.Request(name))
+            .catch(reject);
           break;
         }
       }
@@ -142,5 +155,13 @@ export abstract class RequestManager<
 
   public get url(): string {
     return this._url;
+  }
+
+  /**
+   * Function to enable request logging
+   */
+
+  public enableLogging(): void {
+    this._logging = true;
   }
 }
