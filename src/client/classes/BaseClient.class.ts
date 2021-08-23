@@ -1,7 +1,7 @@
 import { ChatConstructor, ChatPreview, GroupProps, Member } from '../../chat';
 import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../../request';
 import { SearchRequestManager } from '../../request/classes/SearchRequest.class';
-import { colorForUuid, enableLogging, initialize, Logger } from '../../util';
+import { colorForUuid, enableLogging, Logger } from '../../util';
 import { config } from '../../util/config';
 import { ChatSocketEvent, SocketEvent } from '../../websocket';
 import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
@@ -53,7 +53,6 @@ export abstract class BaseClient extends SocketHandler {
 
   constructor(auth: string | Credentials, logging: boolean) {
     super(logging);
-    initialize();
     if (logging) {
       userManager.enableLogging();
       chatManager.enableLogging();

@@ -8,11 +8,7 @@ let authManager: AuthRequestManager;
 let userManager: UserRequestManager;
 let chatManager: ChatRequestManager;
 
-/**
- * @internal
- */
-
-export const initialize = (): void => {
+const initialize = (): void => {
   authManager = new AuthRequestManager();
   userManager = new UserRequestManager();
   chatManager = new ChatRequestManager();
@@ -38,6 +34,7 @@ export const enableLogging = (): void => {
 
 export const loginUser = (credentials: Credentials): Promise<string> => {
   return new Promise((resolve, reject) => {
+    !authManager && initialize();
     authManager.sendRequest<'LOGIN'>('LOGIN', { body: credentials }).then(resolve).catch(reject);
   });
 };
@@ -52,6 +49,7 @@ export const loginUser = (credentials: Credentials): Promise<string> => {
 
 export const validateToken = (token: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
+    !authManager && initialize();
     authManager
       .sendRequest<'VALIDATE'>('VALIDATE', { authorization: token })
       .then(resolve)
@@ -69,6 +67,7 @@ export const validateToken = (token: string): Promise<boolean> => {
 
 export const registerUser = ({ password, username }: Credentials): Promise<void> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'REGISTER'>('REGISTER', { body: { mail: username, password: password } })
       .then(resolve)
@@ -86,6 +85,7 @@ export const registerUser = ({ password, username }: Credentials): Promise<void>
 
 export const validateRegister = (token: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'REGISTER_VALIDATE'>('REGISTER_VALIDATE', { token: token })
       .then(resolve)
@@ -108,6 +108,7 @@ export const verifyRegister = (
   data: { name: string; tag: string; description: string; locale: Locale }
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'REGISTER_VERIFY'>('REGISTER_VERIFY', {
         body: { token: token, ...data },
@@ -127,6 +128,7 @@ export const verifyRegister = (
 
 export const requestPasswordReset = (mail: string): Promise<void> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'PASSWORD_RESET'>('PASSWORD_RESET', { body: { mail: mail } })
       .then(resolve)
@@ -144,6 +146,7 @@ export const requestPasswordReset = (mail: string): Promise<void> => {
 
 export const validatePasswordReset = (token: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'PASSWORD_RESET_VALIDATE'>('PASSWORD_RESET_VALIDATE', { token: token })
       .then(resolve)
@@ -163,6 +166,7 @@ export const validatePasswordReset = (token: string): Promise<boolean> => {
 
 export const confirmPasswordReset = (token: string, password: string): Promise<void> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'PASSWORD_RESET_CONFIRM'>('PASSWORD_RESET_CONFIRM', {
         body: { token: token, password: password },
@@ -182,6 +186,7 @@ export const confirmPasswordReset = (token: string, password: string): Promise<v
 
 export const getUserPreview = (uuid: string): Promise<UserPreview> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'GET_PREVIEW'>('GET_PREVIEW', { uuid: uuid })
       .then(({ avatar, ...rest }) =>
@@ -201,6 +206,7 @@ export const getUserPreview = (uuid: string): Promise<UserPreview> => {
 
 export const getUserAvatar = (uuid: string): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'GET_AVATAR'>('GET_AVATAR', { uuid: uuid })
       .then((data: any) => resolve(Buffer.from(data)))
@@ -218,6 +224,7 @@ export const getUserAvatar = (uuid: string): Promise<Buffer> => {
 
 export const getChatPreview = (uuid: string): Promise<ChatPreview> => {
   return new Promise((resolve, reject) => {
+    !chatManager && initialize();
     chatManager
       .sendRequest<'GET_PREVIEW'>('GET_PREVIEW', { uuid: uuid })
       .then(({ avatar, ...rest }) =>
@@ -237,6 +244,7 @@ export const getChatPreview = (uuid: string): Promise<ChatPreview> => {
 
 export const checkUserTag = (tag: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'CHECK_TAG'>('CHECK_TAG', { tag: tag })
       .then((value: any) => resolve(value))
@@ -254,6 +262,7 @@ export const checkUserTag = (tag: string): Promise<boolean> => {
 
 export const checkUserMail = (mail: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
+    !userManager && initialize();
     userManager
       .sendRequest<'CHECK_MAIL'>('CHECK_MAIL', { mail: mail })
       .then((value: any) => resolve(value))
@@ -271,6 +280,7 @@ export const checkUserMail = (mail: string): Promise<boolean> => {
 
 export const checkGroupTag = (tag: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
+    !chatManager && initialize();
     chatManager
       .sendRequest<'CHECK_TAG'>('CHECK_TAG', { tag: tag })
       .then((value: any) => resolve(value))
