@@ -7,7 +7,7 @@
     "dist"
   ],
   "scripts": {
-    "prepare": "tsc"
+    "postinstall": "tsc"
   },
   "keywords": [],
   "author": "",
