@@ -7,7 +7,7 @@
     "dist"
   ],
   "scripts": {
-    "prepare": "tsc"
+    "prepare": "npm i -g typescript && tsc"
   },
   "keywords": [],
   "author": "",
