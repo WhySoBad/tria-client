@@ -1,0 +1,44 @@
+import { Client } from '../../client';
+import { Collection } from '../../util/Collection.class';
+import { Chat } from '../classes';
+import { EditMemberOptions, GroupConstructor, GroupType } from '../types';
+import { BannedMember } from './BannedMember.class';
+import { Member } from './Member.class';
+export declare class Group extends Chat {
+    private _public;
+    private _name;
+    private _tag;
+    private _description;
+    private _avatar;
+    private _banned;
+    constructor(client: Client, props: GroupConstructor);
+    get name(): string;
+    get tag(): string;
+    get description(): string;
+    get avatarURL(): string | null;
+    get public(): boolean;
+    get canEditGroup(): boolean;
+    get canEditMembers(): boolean;
+    get canBan(): boolean;
+    get canUnban(): boolean;
+    get canKick(): boolean;
+    get canDelete(): boolean;
+    get bannedMembers(): Collection<string, BannedMember>;
+    delete(): Promise<void>;
+    setName(name: string): Promise<void>;
+    setTag(tag: string): Promise<void>;
+    setDescription(description: string): Promise<void>;
+    setType(type: GroupType): Promise<void>;
+    setSettings(settings: {
+        description?: string;
+        tag?: string;
+        name?: string;
+        type?: GroupType;
+    }): Promise<void>;
+    setAvatar(avatar: FormData): Promise<void>;
+    deleteAvatar(): Promise<void>;
+    banMember(member: Member): Promise<void>;
+    unbanMember(member: string): Promise<void>;
+    kickMember(member: Member): Promise<void>;
+    editMember(member: Member, { role, permissions }: EditMemberOptions): Promise<void>;
+}

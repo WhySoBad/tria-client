@@ -1,0 +1,34 @@
+import { ChatPreview, GroupProps } from '../../chat';
+import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
+import { Credentials, SearchOptions, UserPreview } from '../types';
+import { Client } from './Client.class';
+import { ClientUser } from './ClientUser.class';
+export declare abstract class BaseClient extends SocketHandler {
+    readonly credentials: Credentials;
+    private _user;
+    private _token;
+    private _connected;
+    private _validated;
+    constructor(auth: string | Credentials, logging: boolean);
+    connect(): Promise<void>;
+    disconnect(): Promise<void>;
+    login(): Promise<string>;
+    protected validate(): Promise<boolean>;
+    logout(): Promise<void>;
+    delete(): Promise<void>;
+    protected fetchUser(): Promise<ClientUser>;
+    createPrivateChat(user: string): Promise<string>;
+    createGroupChat({ name, tag, description, type, members, }: GroupProps): Promise<string>;
+    joinGroup(group: string): Promise<void>;
+    leaveGroup(group: string): Promise<void>;
+    changePassword(oldPassword: string, newPassword: string): Promise<void>;
+    search(options: SearchOptions): Promise<Array<ChatPreview | UserPreview>>;
+    log(...message: Array<any>): void;
+    error(...error: Array<any>): void;
+    get token(): string;
+    protected setToken(token: string): void;
+    get connected(): boolean;
+    protected setConnected(state: boolean): void;
+    get client(): Client;
+    get user(): ClientUser;
+}

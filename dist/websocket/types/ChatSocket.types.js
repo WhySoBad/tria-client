@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ChatSocketEvent = void 0;
+var ChatSocketEvent;
+(function (ChatSocketEvent) {
+    ChatSocketEvent["CONNECT"] = "CHAT_CONNECT";
+    ChatSocketEvent["DISCONNECT"] = "CHAT_DISCONNECT";
+    ChatSocketEvent["MESSAGE"] = "MESSAGE";
+    ChatSocketEvent["CHAT_EDIT"] = "CHAT_EDIT";
+    ChatSocketEvent["MESSAGE_EDIT"] = "MESSAGE_EDIT";
+    ChatSocketEvent["MEMBER_EDIT"] = "MEMBER_EDIT";
+    ChatSocketEvent["CHAT_DELETE"] = "CHAT_DELETE";
+    ChatSocketEvent["MEMBER_JOIN"] = "MEMBER_JOIN";
+    ChatSocketEvent["MEMBER_LEAVE"] = "MEMBER_LEAVE";
+    ChatSocketEvent["MEMBER_BAN"] = "MEMBER_BAN";
+    ChatSocketEvent["MEMBER_UNBAN"] = "MEMBER_UNBAN";
+    ChatSocketEvent["MEMBER_ONLINE"] = "MEMBER_ONLINE";
+    ChatSocketEvent["MEMBER_OFFLINE"] = "MEMBER_OFFLINE";
+    ChatSocketEvent["PRIVATE_CREATE"] = "PRIVATE_CREATE";
+    ChatSocketEvent["GROUP_CREATE"] = "GROUP_CREATE";
+})(ChatSocketEvent = exports.ChatSocketEvent || (exports.ChatSocketEvent = {}));

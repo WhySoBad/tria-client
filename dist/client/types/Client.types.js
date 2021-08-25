@@ -1,0 +1,23 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ClientEvent = void 0;
+var ClientEvent;
+(function (ClientEvent) {
+    ClientEvent["READY"] = "READY";
+    ClientEvent["CONNECT"] = "CONNECT";
+    ClientEvent["DISCONNECT"] = "DISCONNECT";
+    ClientEvent["CHAT_CONNECT"] = "CHAT_CONNECT";
+    ClientEvent["CHAT_DISCONNECT"] = "CHAT_DISCONNECT";
+    ClientEvent["USER_CONNECT"] = "USER_CONNECT";
+    ClientEvent["USER_DISCONNECT"] = "USER_DISCONNECT";
+    ClientEvent["ERROR"] = "ERROR";
+    ClientEvent["MESSAGE"] = "MESSAGE";
+    ClientEvent["CHAT_EDIT"] = "CHAT_EDIT";
+    ClientEvent["MESSAGE_EDIT"] = "MESSAGE_EDIT";
+    ClientEvent["MEMBER_EDIT"] = "MEMBER_EDIT";
+    ClientEvent["CHAT_DELETE"] = "CHAT_DELETE";
+    ClientEvent["MEMBER_JOIN"] = "MEMBER_JOIN";
+    ClientEvent["MEMBER_LEAVE"] = "MEMBER_LEAVE";
+    ClientEvent["MEMBER_BAN"] = "MEMBER_BAN";
+    ClientEvent["MEMBER_UNBAN"] = "MEMBER_UNBAN";
+})(ClientEvent = exports.ClientEvent || (exports.ClientEvent = {}));

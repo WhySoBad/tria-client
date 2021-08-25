@@ -6,9 +6,6 @@
   "files": [
     "dist"
   ],
-  "scripts": {
-    "postinstall": "tsc"
-  },
   "keywords": [],
   "author": "",
   "license": "MIT",
