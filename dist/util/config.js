@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
 exports.config = {
-    apiUrl: 'http://194.195.246.128:3000',
+    apiUrl: 'https://api.tria.chat',
     eventDelay: 100,
     maxListenerCount: 0,
 };
