@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chat = void 0;
+const tslib_1 = require("tslib");
 const uuid_1 = require("uuid");
 const request_1 = require("../../request");
 const util_1 = require("../../util");
@@ -148,22 +149,27 @@ class Chat {
         });
     }
     readUntil(timestamp) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (!this.members.get(this.client.user.uuid))
                 reject('Invalid User');
-            else
-                chatManager
+            else {
+                yield chatManager
                     .sendRequest('READ_MESSAGES', {
                     uuid: this.uuid,
                     timestamp: timestamp instanceof Date ? timestamp.getTime() : timestamp,
                     authorization: this.client.token,
                 })
-                    .then(() => {
-                    this._lastRead = new Date(timestamp);
-                    resolve();
-                })
                     .catch(reject);
-        });
+                const handleReadMessage = (chat, timestamp) => {
+                    if (chat === this.uuid) {
+                        this._lastRead = new Date(timestamp);
+                        this.client.raw.off(websocket_1.ChatSocketEvent.MESSAGE_READ, handleReadMessage);
+                        resolve();
+                    }
+                };
+                this.client.raw.on(websocket_1.ChatSocketEvent.MESSAGE_READ, handleReadMessage);
+            }
+        }));
     }
 }
 exports.Chat = Chat;

@@ -286,20 +286,25 @@ export abstract class Chat {
    */
 
   public readUntil(timestamp: Date | number): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (!this.members.get(this.client.user.uuid)) reject('Invalid User');
-      else
-        chatManager
+      else {
+        await chatManager
           .sendRequest<'READ_MESSAGES'>('READ_MESSAGES', {
             uuid: this.uuid,
             timestamp: timestamp instanceof Date ? timestamp.getTime() : timestamp,
             authorization: this.client.token,
           })
-          .then(() => {
-            this._lastRead = new Date(timestamp);
-            resolve();
-          })
           .catch(reject);
+        const handleReadMessage = (chat: string, timestamp: number) => {
+          if (chat === this.uuid) {
+            this._lastRead = new Date(timestamp);
+            this.client.raw.off(ChatSocketEvent.MESSAGE_READ, handleReadMessage);
+            resolve();
+          }
+        };
+        this.client.raw.on(ChatSocketEvent.MESSAGE_READ, handleReadMessage);
+      }
     });
   }
 }

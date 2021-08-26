@@ -41,6 +41,7 @@ class ChatSocket extends BaseSocket_class_1.BaseSocket {
             member.chat,
             member.user,
         ]);
+        this.addEvent(ChatSocket_types_1.ChatSocketEvent.MESSAGE_READ, ({ chat, timestamp }) => [chat, timestamp]);
         this.addEvent(ChatSocket_types_1.ChatSocketEvent.PRIVATE_CREATE, (chat) => (Object.assign(Object.assign({}, chat), { name: null, tag: null, description: null })));
     }
 }
