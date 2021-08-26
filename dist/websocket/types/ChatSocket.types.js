@@ -18,5 +18,4 @@ var ChatSocketEvent;
     ChatSocketEvent["MEMBER_OFFLINE"] = "MEMBER_OFFLINE";
     ChatSocketEvent["PRIVATE_CREATE"] = "PRIVATE_CREATE";
     ChatSocketEvent["GROUP_CREATE"] = "GROUP_CREATE";
-    ChatSocketEvent["MESSAGE_READ"] = "MESSAGE_READ";
 })(ChatSocketEvent = exports.ChatSocketEvent || (exports.ChatSocketEvent = {}));

@@ -38,9 +38,7 @@ class RequestManager {
             }
             let { method, path, options = {} } = this._requests[name];
             Object.entries(props || {}).forEach(([key, value]) => {
-                if (key.toLowerCase() !== 'token' &&
-                    key.toLowerCase() !== 'authorization' &&
-                    key.toLowerCase() !== 'body') {
+                if (key.toLowerCase() !== 'authorization' && key.toLowerCase() !== 'body') {
                     path = path.replace(`%${key}`, `${value}`);
                 }
             });

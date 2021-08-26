@@ -12,6 +12,7 @@ class UserSocket extends BaseSocket_class_1.BaseSocket {
             return [user, rest];
         });
         this.addEvent(UserSocket_types_1.UserSocketEvent.USER_DELETE);
+        this.addEvent(UserSocket_types_1.UserSocketEvent.MESSAGE_READ, ({ chat, timestamp }) => [chat, timestamp]);
     }
 }
 exports.UserSocket = UserSocket;

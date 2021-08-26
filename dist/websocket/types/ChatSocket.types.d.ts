@@ -31,7 +31,6 @@ export interface ChatSocketEvents extends SocketEvents {
     MEMBER_OFFLINE: (member: string) => void;
     PRIVATE_CREATE: (privateChat: PrivateChatConstructor) => void;
     GROUP_CREATE: (groupChat: GroupConstructor) => void;
-    MESSAGE_READ: (chat: string, timestamp: number) => void;
 }
 export declare enum ChatSocketEvent {
     CONNECT = "CHAT_CONNECT",
@@ -48,6 +47,5 @@ export declare enum ChatSocketEvent {
     MEMBER_ONLINE = "MEMBER_ONLINE",
     MEMBER_OFFLINE = "MEMBER_OFFLINE",
     PRIVATE_CREATE = "PRIVATE_CREATE",
-    GROUP_CREATE = "GROUP_CREATE",
-    MESSAGE_READ = "MESSAGE_READ"
+    GROUP_CREATE = "GROUP_CREATE"
 }

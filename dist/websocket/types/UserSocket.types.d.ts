@@ -13,10 +13,12 @@ export interface UserSocketEvents extends SocketEvents {
         avatar: string | null;
     }) => void;
     USER_DELETE: (uuid: string) => void;
+    MESSAGE_READ: (chat: string, timestamp: number) => void;
 }
 export declare enum UserSocketEvent {
     CONNECT = "USER_CONNECT",
     DISCONNECT = "USER_DISCONNECT",
     USER_EDIT = "USER_EDIT",
-    USER_DELETE = "USER_DELETE"
+    USER_DELETE = "USER_DELETE",
+    MESSAGE_READ = "MESSAGE_READ"
 }

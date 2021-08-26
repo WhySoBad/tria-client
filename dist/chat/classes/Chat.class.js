@@ -163,11 +163,11 @@ class Chat {
                 const handleReadMessage = (chat, timestamp) => {
                     if (chat === this.uuid) {
                         this._lastRead = new Date(timestamp);
-                        this.client.raw.off(websocket_1.ChatSocketEvent.MESSAGE_READ, handleReadMessage);
+                        this.client.raw.off(websocket_1.UserSocketEvent.MESSAGE_READ, handleReadMessage);
                         resolve();
                     }
                 };
-                this.client.raw.on(websocket_1.ChatSocketEvent.MESSAGE_READ, handleReadMessage);
+                this.client.raw.on(websocket_1.UserSocketEvent.MESSAGE_READ, handleReadMessage);
             }
         }));
     }
