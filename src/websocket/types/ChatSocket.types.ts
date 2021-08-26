@@ -52,8 +52,6 @@ export interface ChatSocketEvents extends SocketEvents {
   PRIVATE_CREATE: (privateChat: PrivateChatConstructor) => void;
 
   GROUP_CREATE: (groupChat: GroupConstructor) => void;
-
-  MESSAGE_READ: (chat: string, timestamp: number) => void;
 }
 
 export enum ChatSocketEvent {
@@ -145,10 +143,4 @@ export enum ChatSocketEvent {
    */
 
   GROUP_CREATE = 'GROUP_CREATE',
-
-  /**
-   * Message read event
-   */
-
-  MESSAGE_READ = 'MESSAGE_READ',
 }

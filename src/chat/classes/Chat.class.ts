@@ -3,7 +3,7 @@ import { Client } from '../../client';
 import { ChatRequestManager } from '../../request';
 import { colorForUuid, handleAction } from '../../util';
 import { Collection } from '../../util/Collection.class';
-import { ChatSocketEvent } from '../../websocket';
+import { ChatSocketEvent, UserSocketEvent } from '../../websocket';
 import { Member, Message } from '../classes';
 import { ChatConstructor, ChatType, MemberConstructor, MessageContstructor } from '../types';
 import { MemberLogConstructor } from '../types/MemberLog.types';
@@ -299,11 +299,11 @@ export abstract class Chat {
         const handleReadMessage = (chat: string, timestamp: number) => {
           if (chat === this.uuid) {
             this._lastRead = new Date(timestamp);
-            this.client.raw.off(ChatSocketEvent.MESSAGE_READ, handleReadMessage);
+            this.client.raw.off(UserSocketEvent.MESSAGE_READ, handleReadMessage);
             resolve();
           }
         };
-        this.client.raw.on(ChatSocketEvent.MESSAGE_READ, handleReadMessage);
+        this.client.raw.on(UserSocketEvent.MESSAGE_READ, handleReadMessage);
       }
     });
   }

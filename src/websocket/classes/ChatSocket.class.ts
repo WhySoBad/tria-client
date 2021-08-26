@@ -42,11 +42,6 @@ export class ChatSocket extends BaseSocket {
     ]);
 
     this.addEvent(
-      ChatSocketEvent.MESSAGE_READ,
-      ({ chat, timestamp }: { chat: string; timestamp: number }) => [chat, timestamp]
-    );
-
-    this.addEvent(
       ChatSocketEvent.PRIVATE_CREATE,
       (chat: {
         uuid: string;

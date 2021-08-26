@@ -7,5 +7,9 @@ export class UserSocket extends BaseSocket {
 
     this.addEvent(UserSocketEvent.USER_EDIT, ({ user, ...rest }) => [user, rest]);
     this.addEvent(UserSocketEvent.USER_DELETE);
+    this.addEvent(
+      UserSocketEvent.MESSAGE_READ,
+      ({ chat, timestamp }: { chat: string; timestamp: number }) => [chat, timestamp]
+    );
   }
 }

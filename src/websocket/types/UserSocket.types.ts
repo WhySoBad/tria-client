@@ -14,6 +14,8 @@ export interface UserSocketEvents extends SocketEvents {
   ) => void;
 
   USER_DELETE: (uuid: string) => void;
+
+  MESSAGE_READ: (chat: string, timestamp: number) => void;
 }
 
 export enum UserSocketEvent {
@@ -40,4 +42,10 @@ export enum UserSocketEvent {
    */
 
   USER_DELETE = 'USER_DELETE',
+
+  /**
+   * Message read event
+   */
+
+  MESSAGE_READ = 'MESSAGE_READ',
 }
