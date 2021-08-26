@@ -93,11 +93,7 @@ export abstract class RequestManager<
       }
       let { method, path, options = {} }: RequestManagerRequest = this._requests[name as string];
       Object.entries((props as object) || {}).forEach(([key, value]) => {
-        if (
-          key.toLowerCase() !== 'token' &&
-          key.toLowerCase() !== 'authorization' &&
-          key.toLowerCase() !== 'body'
-        ) {
+        if (key.toLowerCase() !== 'authorization' && key.toLowerCase() !== 'body') {
           path = path.replace(`%${key}`, `${value}`);
         }
       });
