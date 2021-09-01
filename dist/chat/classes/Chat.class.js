@@ -153,7 +153,7 @@ class Chat {
             if (!this.members.get(this.client.user.uuid))
                 reject('Invalid User');
             else {
-                yield chatManager
+                chatManager
                     .sendRequest('READ_MESSAGES', {
                     uuid: this.uuid,
                     timestamp: timestamp instanceof Date ? timestamp.getTime() : timestamp,

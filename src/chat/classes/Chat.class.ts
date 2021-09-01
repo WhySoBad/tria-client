@@ -289,7 +289,7 @@ export abstract class Chat {
     return new Promise(async (resolve, reject) => {
       if (!this.members.get(this.client.user.uuid)) reject('Invalid User');
       else {
-        await chatManager
+        chatManager
           .sendRequest<'READ_MESSAGES'>('READ_MESSAGES', {
             uuid: this.uuid,
             timestamp: timestamp instanceof Date ? timestamp.getTime() : timestamp,
