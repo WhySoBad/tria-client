@@ -14,8 +14,6 @@ const initialize = (): void => {
   chatManager = new ChatRequestManager();
 };
 
-initialize();
-
 /**
  * @internal
  */
