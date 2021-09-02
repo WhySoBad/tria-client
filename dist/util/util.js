@@ -13,6 +13,7 @@ const initialize = () => {
     userManager = new request_1.UserRequestManager();
     chatManager = new request_1.ChatRequestManager();
 };
+initialize();
 const enableLogging = () => {
     authManager.enableLogging();
     userManager.enableLogging();
