@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RequestManager = void 0;
 const tslib_1 = require("tslib");
 const axios_1 = tslib_1.__importDefault(require("axios"));
+const https_1 = require("https");
 const util_1 = require("../../util");
 const config_1 = require("../../util/config");
 const baseurl = config_1.config.apiUrl;
@@ -14,6 +15,7 @@ class RequestManager {
         this._instance = axios_1.default.create({
             baseURL: this._url,
             timeoutErrorMessage: 'Timed Out',
+            httpsAgent: new https_1.Agent({ rejectUnauthorized: false }),
         });
         this._instance.interceptors.response.use((response) => response.data, (error) => {
             var _a, _b;
