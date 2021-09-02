@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Agent } from 'https';
 import { Logger } from '../../util';
 import { config } from '../../util/config';
 import { RequestManagerProps, RequestManagerRequest } from '../types/RequestManager.types';
@@ -34,6 +35,7 @@ export abstract class RequestManager<
     this._instance = axios.create({
       baseURL: this._url,
       timeoutErrorMessage: 'Timed Out',
+      httpsAgent: new Agent({ rejectUnauthorized: false }),
     });
     this._instance.interceptors.response.use(
       (response: AxiosResponse) => response.data,
