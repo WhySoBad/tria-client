@@ -1,9 +1,9 @@
-import { ChatConstructor, ChatPreview, GroupProps, Member } from '../../chat';
+import { ChatConstructor, ChatPreview, GroupProps } from '../../chat';
 import { AuthRequestManager, ChatRequestManager, UserRequestManager } from '../../request';
 import { SearchRequestManager } from '../../request/classes/SearchRequest.class';
 import { colorForUuid, enableLogging, Logger } from '../../util';
 import { config } from '../../util/config';
-import { ChatSocketEvent, SocketEvent } from '../../websocket';
+import { SocketEvent } from '../../websocket';
 import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
 import {
   ClientEvent,
@@ -272,16 +272,7 @@ export abstract class BaseClient extends SocketHandler {
     return new Promise((resolve, reject) => {
       chatManager
         .sendRequest<'JOIN'>('JOIN', { uuid: group, authorization: this.token })
-        .then(() => {
-          const handler = (chat: string, member: Member) => {
-            if (member.user.uuid === this.client.user.uuid) {
-              handleOff();
-              resolve();
-            }
-          };
-          const handleOff = () => this.client.off(ChatSocketEvent.MEMBER_JOIN, handler);
-          this.client.on(ChatSocketEvent.MEMBER_JOIN, handler);
-        })
+        .then(resolve)
         .catch(reject);
     });
   }
