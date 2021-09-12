@@ -107,7 +107,7 @@ export abstract class RequestManager<
           this._instance
             .post(
               path,
-              props.body.formData ? props.body.formData : (props && props.body) || {},
+              props.body?.formData ? props.body.formData : (props && props.body) || {},
               config
             )
             .then(resolve)
@@ -119,7 +119,7 @@ export abstract class RequestManager<
           this._instance
             .put(
               path,
-              props.body.formData ? props.body.formData : (props && props.body) || {},
+              props.body?.formData ? props.body.formData : (props && props.body) || {},
               config
             )
             .then(resolve)

@@ -35,6 +35,7 @@ class RequestManager {
     }
     sendRequest(name, props, config = {}) {
         return new Promise((resolve, reject) => {
+            var _a, _b;
             if (!this._requests[name]) {
                 throw new Error("Request hasn't been added yet");
             }
@@ -49,7 +50,7 @@ class RequestManager {
             switch (method) {
                 case 'POST': {
                     this._instance
-                        .post(path, props.body.formData ? props.body.formData : (props && props.body) || {}, config)
+                        .post(path, ((_a = props.body) === null || _a === void 0 ? void 0 : _a.formData) ? props.body.formData : (props && props.body) || {}, config)
                         .then(resolve)
                         .then(() => this._logging && util_1.Logger.Request(name))
                         .catch(reject);
@@ -57,7 +58,7 @@ class RequestManager {
                 }
                 case 'PUT': {
                     this._instance
-                        .put(path, props.body.formData ? props.body.formData : (props && props.body) || {}, config)
+                        .put(path, ((_b = props.body) === null || _b === void 0 ? void 0 : _b.formData) ? props.body.formData : (props && props.body) || {}, config)
                         .then(resolve)
                         .then(() => this._logging && util_1.Logger.Request(name))
                         .catch(reject);
