@@ -169,16 +169,7 @@ class BaseClient extends SocketHandler_class_1.SocketHandler {
         return new Promise((resolve, reject) => {
             chatManager
                 .sendRequest('JOIN', { uuid: group, authorization: this.token })
-                .then(() => {
-                const handler = (chat, member) => {
-                    if (member.user.uuid === this.client.user.uuid) {
-                        handleOff();
-                        resolve();
-                    }
-                };
-                const handleOff = () => this.client.off(websocket_1.ChatSocketEvent.MEMBER_JOIN, handler);
-                this.client.on(websocket_1.ChatSocketEvent.MEMBER_JOIN, handler);
-            })
+                .then(resolve)
                 .catch(reject);
         });
     }
