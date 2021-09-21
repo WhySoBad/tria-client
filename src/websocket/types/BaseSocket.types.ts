@@ -20,9 +20,28 @@ export interface BaseSocketConstructor {
 }
 
 export interface ActionError {
+  /**
+   * Uuid of the action
+   */
+
   uuid: string;
+
+  /**
+   * Error status code
+   */
+
   statusCode: number;
+
+  /**
+   * Error message
+   */
+
   message: string;
+
+  /**
+   * Reason
+   */
+
   error: string;
 }
 

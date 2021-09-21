@@ -59,11 +59,11 @@ class Chat {
         this.client.raw.on(websocket_1.ChatSocketEvent.MESSAGE_EDIT, (chat, editedMessage) => {
             if (chat !== this.uuid)
                 return;
-            const { uuid, edited, editedAt, pinned, text } = editedMessage;
+            const { uuid, edited, editedAt, text } = editedMessage;
             const message = this._messages.get(uuid);
             if (!message)
                 return client.error('Failed To Edit Message');
-            this._messages.set(uuid, new classes_1.Message(message.client, Object.assign(Object.assign({}, message), { edited: edited, editedAt: editedAt, pinned: pinned, text: text })));
+            this._messages.set(uuid, new classes_1.Message(message.client, Object.assign(Object.assign({}, message), { edited: edited, editedAt: editedAt, text: text })));
         });
     }
     get type() {

@@ -6,6 +6,7 @@ import { config } from '../../util/config';
 import { SocketEvent } from '../../websocket';
 import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
 import {
+  BaseClientConstructor,
   ClientEvent,
   ClientUserConstructor,
   Credentials,
@@ -51,7 +52,7 @@ export abstract class BaseClient extends SocketHandler {
 
   private _validated: boolean = false;
 
-  constructor(auth: string | Credentials, logging: boolean) {
+  constructor({ auth, logging }: BaseClientConstructor) {
     super(logging);
     if (logging) {
       userManager.enableLogging();

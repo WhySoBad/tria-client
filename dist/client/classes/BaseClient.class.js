@@ -15,7 +15,7 @@ const userManager = new request_1.UserRequestManager();
 const chatManager = new request_1.ChatRequestManager();
 const searchManager = new SearchRequest_class_1.SearchRequestManager();
 class BaseClient extends SocketHandler_class_1.SocketHandler {
-    constructor(auth, logging) {
+    constructor({ auth, logging }) {
         super(logging);
         this._connected = false;
         this._validated = false;

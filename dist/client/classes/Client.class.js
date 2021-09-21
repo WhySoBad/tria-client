@@ -6,7 +6,7 @@ class Client extends BaseClient_class_1.BaseClient {
     constructor({ credentials, log, token }) {
         if (!token && !credentials)
             throw new Error('Missing token or credentials');
-        super(credentials || token || '', !!log);
+        super({ auth: credentials || token || '', logging: !!log });
         this._client = this;
     }
 }

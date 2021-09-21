@@ -1,6 +1,6 @@
 import { ChatPreview, GroupProps } from '../../chat';
 import { SocketHandler } from '../../websocket/classes/SocketHandler.class';
-import { Credentials, SearchOptions, UserPreview } from '../types';
+import { BaseClientConstructor, Credentials, SearchOptions, UserPreview } from '../types';
 import { Client } from './Client.class';
 import { ClientUser } from './ClientUser.class';
 export declare abstract class BaseClient extends SocketHandler {
@@ -9,7 +9,7 @@ export declare abstract class BaseClient extends SocketHandler {
     private _token;
     private _connected;
     private _validated;
-    constructor(auth: string | Credentials, logging: boolean);
+    constructor({ auth, logging }: BaseClientConstructor);
     connect(): Promise<void>;
     disconnect(): Promise<void>;
     login(): Promise<string>;

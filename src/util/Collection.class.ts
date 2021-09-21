@@ -9,7 +9,6 @@ export class Collection<Id extends string, Value extends object> {
 
   constructor(values?: Map<Id, Value>) {
     if (values) this._map = values;
-    this._map.has;
   }
 
   [Symbol.iterator]() {

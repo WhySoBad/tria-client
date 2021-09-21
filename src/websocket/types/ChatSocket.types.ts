@@ -20,7 +20,6 @@ export interface ChatSocketEvents extends SocketEvents {
       chat: string;
       uuid: string;
       text: string;
-      pinned: boolean;
       edited: number;
       editedAt: Date;
     }

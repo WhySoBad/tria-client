@@ -108,7 +108,7 @@ export abstract class Chat {
 
     this.client.raw.on(ChatSocketEvent.MESSAGE_EDIT, (chat: string, editedMessage) => {
       if (chat !== this.uuid) return;
-      const { uuid, edited, editedAt, pinned, text } = editedMessage;
+      const { uuid, edited, editedAt, text } = editedMessage;
       const message: Message | undefined = this._messages.get(uuid);
       if (!message) return client.error('Failed To Edit Message');
       this._messages.set(
@@ -117,7 +117,6 @@ export abstract class Chat {
           ...message,
           edited: edited,
           editedAt: editedAt,
-          pinned: pinned,
           text: text,
         })
       );

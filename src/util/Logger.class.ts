@@ -1,25 +1,78 @@
 export class Logger {
-  public static Error(...args: Array<any>) {
+  /**
+   * Integrated error logger
+   *
+   * @param args log output
+   *
+   * @returns void
+   */
+
+  public static Error(...args: Array<any>): void {
     const prefix: string = '[\u001b[31mError\u001b[37m]';
     console.log(prefix, ...args);
   }
-  public static Event(...args: Array<any>) {
+
+  /**
+   * Integrated event logger
+   *
+   * @param args log output
+   *
+   * @returns void
+   */
+
+  public static Event(...args: Array<any>): void {
     const prefix: string = '[\u001b[32mEvent\u001b[37m]';
     console.log(prefix, ...args);
   }
-  public static Info(...args: Array<any>) {
+
+  /**
+   * Integrated info logger
+   *
+   * @param args log output
+   *
+   * @returns void
+   */
+
+  public static Info(...args: Array<any>): void {
     const prefix: string = '[\u001b[34mInfo\u001b[37m]';
     console.log(prefix, ...args);
   }
-  public static Warning(...args: Array<any>) {
+
+  /**
+   * Integrated warning logger
+   *
+   * @param args log output
+   *
+   * @returns void
+   */
+
+  public static Warning(...args: Array<any>): void {
     const prefix: string = '[\u001b[33mWarning\u001b[37m]';
     console.log(prefix, ...args);
   }
-  public static Request(...args: Array<any>) {
+
+  /**
+   * Integrated request logger
+   *
+   * @param args log output
+   *
+   * @returns void
+   */
+
+  public static Request(...args: Array<any>): void {
     const prefix: string = '[\u001b[35mRequest\u001b[37m]';
     console.log(prefix, ...args);
   }
-  public static Log(...args: Array<any>) {
+
+  /**
+   * Integrated logger
+   *
+   * @param args log output
+   *
+   * @returns void
+   */
+
+  public static Log(...args: Array<any>): void {
     const prefix: string = '[\u001b[34mLog\u001b[37m]';
     console.log(prefix, ...args);
   }

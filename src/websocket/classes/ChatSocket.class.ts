@@ -5,21 +5,15 @@ import { BaseSocket } from './BaseSocket.class';
 export class ChatSocket extends BaseSocket {
   constructor(props: ChatSocketConstructor) {
     super(props);
-    this.addEvent(ChatSocketEvent.MESSAGE, (message: any) => [
+    this.addEvent(ChatSocketEvent.MESSAGE, (message) => [
       message.chat,
       new Message(props.client, message),
     ]);
-    this.addEvent(ChatSocketEvent.CHAT_DELETE, ({ chat }: { chat: string }) => chat);
+    this.addEvent(ChatSocketEvent.CHAT_DELETE, ({ chat }) => chat);
     this.addEvent(ChatSocketEvent.MEMBER_ONLINE);
     this.addEvent(ChatSocketEvent.MEMBER_OFFLINE);
-    this.addEvent(ChatSocketEvent.MEMBER_BAN, ({ chat, user }: { chat: string; user: string }) => [
-      chat,
-      user,
-    ]);
-    this.addEvent(
-      ChatSocketEvent.MEMBER_UNBAN,
-      ({ chat, user }: { chat: string; user: string }) => [chat, user]
-    );
+    this.addEvent(ChatSocketEvent.MEMBER_BAN, ({ chat, user }) => [chat, user]);
+    this.addEvent(ChatSocketEvent.MEMBER_UNBAN, ({ chat, user }) => [chat, user]);
     this.addEvent(ChatSocketEvent.GROUP_CREATE);
 
     this.addEvent(ChatSocketEvent.MEMBER_EDIT, ({ chat, ...rest }) => [chat, rest]);
@@ -36,10 +30,7 @@ export class ChatSocket extends BaseSocket {
       new Member({ ...member, user: { client: props.client, ...member.user } }),
     ]);
 
-    this.addEvent(ChatSocketEvent.MEMBER_LEAVE, (member: { chat: string; user: string }) => [
-      member.chat,
-      member.user,
-    ]);
+    this.addEvent(ChatSocketEvent.MEMBER_LEAVE, ({ chat, user }) => [chat, user]);
 
     this.addEvent(
       ChatSocketEvent.PRIVATE_CREATE,

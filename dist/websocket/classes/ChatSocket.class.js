@@ -15,10 +15,7 @@ class ChatSocket extends BaseSocket_class_1.BaseSocket {
         this.addEvent(ChatSocket_types_1.ChatSocketEvent.CHAT_DELETE, ({ chat }) => chat);
         this.addEvent(ChatSocket_types_1.ChatSocketEvent.MEMBER_ONLINE);
         this.addEvent(ChatSocket_types_1.ChatSocketEvent.MEMBER_OFFLINE);
-        this.addEvent(ChatSocket_types_1.ChatSocketEvent.MEMBER_BAN, ({ chat, user }) => [
-            chat,
-            user,
-        ]);
+        this.addEvent(ChatSocket_types_1.ChatSocketEvent.MEMBER_BAN, ({ chat, user }) => [chat, user]);
         this.addEvent(ChatSocket_types_1.ChatSocketEvent.MEMBER_UNBAN, ({ chat, user }) => [chat, user]);
         this.addEvent(ChatSocket_types_1.ChatSocketEvent.GROUP_CREATE);
         this.addEvent(ChatSocket_types_1.ChatSocketEvent.MEMBER_EDIT, (_a) => {
@@ -37,10 +34,7 @@ class ChatSocket extends BaseSocket_class_1.BaseSocket {
             member.chat,
             new chat_1.Member(Object.assign(Object.assign({}, member), { user: Object.assign({ client: props.client }, member.user) })),
         ]);
-        this.addEvent(ChatSocket_types_1.ChatSocketEvent.MEMBER_LEAVE, (member) => [
-            member.chat,
-            member.user,
-        ]);
+        this.addEvent(ChatSocket_types_1.ChatSocketEvent.MEMBER_LEAVE, ({ chat, user }) => [chat, user]);
         this.addEvent(ChatSocket_types_1.ChatSocketEvent.PRIVATE_CREATE, (chat) => (Object.assign(Object.assign({}, chat), { name: null, tag: null, description: null })));
     }
 }

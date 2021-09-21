@@ -6,7 +6,6 @@ class Collection {
         this._map = new Map();
         if (values)
             this._map = values;
-        this._map.has;
     }
     [Symbol.iterator]() {
         let index = 0;

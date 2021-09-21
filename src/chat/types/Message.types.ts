@@ -40,12 +40,6 @@ export interface MessageContstructor {
    */
 
   text: string;
-
-  /**
-   * Boolean whether the message is pinned or not
-   */
-
-  pinned: boolean;
 }
 
 export interface MessageEdit {
@@ -66,12 +60,6 @@ export interface MessageEdit {
    */
 
   text: string;
-
-  /**
-   * Boolean whether the message is pinned or not
-   */
-
-  pinned: boolean;
 
   /**
    * Times the message was edited

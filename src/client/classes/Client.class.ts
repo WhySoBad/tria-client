@@ -14,7 +14,7 @@ export class Client extends BaseClient {
 
   constructor({ credentials, log, token }: ClientConstructor) {
     if (!token && !credentials) throw new Error('Missing token or credentials');
-    super(credentials || token || '', !!log);
+    super({ auth: credentials || token || '', logging: !!log });
     this._client = this;
   }
 }

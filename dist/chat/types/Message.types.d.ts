@@ -6,13 +6,11 @@ export interface MessageContstructor {
     editedAt: Date | null;
     edited: number;
     text: string;
-    pinned: boolean;
 }
 export interface MessageEdit {
     chat: string;
     uuid: string;
     text: string;
-    pinned: boolean;
     edited: number;
     editedAt: Date;
 }

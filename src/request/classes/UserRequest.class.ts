@@ -2,9 +2,7 @@ import { Locale } from '../../client';
 import { RequestManager } from './RequestManager.class';
 
 interface UserRequests {
-  REGISTER: {
-    body: { mail: string; password: string };
-  };
+  REGISTER: { body: { mail: string; password: string } };
   REGISTER_VALIDATE: { token: string };
   REGISTER_VERIFY: {
     body: { token: string; name: string; tag: string; description: string; locale: Locale };
@@ -13,10 +11,7 @@ interface UserRequests {
     authorization: string;
     body: { name?: string; tag?: string; description?: string; locale?: Locale };
   };
-  PASSWORD_CHANGE: {
-    authorization: string;
-    body: { old: string; new: string };
-  };
+  PASSWORD_CHANGE: { authorization: string; body: { old: string; new: string } };
   PASSWORD_RESET: { body: { mail: string } };
   PASSWORD_RESET_VALIDATE: { token: string };
   PASSWORD_RESET_CONFIRM: { body: { token: string; password: string } };

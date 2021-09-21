@@ -9,15 +9,10 @@ export declare class Message {
     private _editedAt;
     private _edited;
     private _text;
-    private _pinned;
     constructor(client: Client, props: MessageContstructor);
     get editedAt(): Date | null;
     get edited(): number;
     get text(): string;
-    get pinned(): boolean;
     get editable(): boolean;
-    get pinnable(): boolean;
     setText(text: string): Promise<void>;
-    pin(): Promise<void>;
-    unpin(): Promise<void>;
 }

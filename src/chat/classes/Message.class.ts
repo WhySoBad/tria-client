@@ -45,8 +45,6 @@ export class Message {
 
   private _text: string;
 
-  private _pinned: boolean;
-
   constructor(client: Client, props: MessageContstructor) {
     this.client = client;
     this.uuid = props.uuid;
@@ -56,7 +54,6 @@ export class Message {
     this._editedAt = props.editedAt ? new Date(props.editedAt) : null;
     this._edited = props.edited;
     this._text = props.text;
-    this._pinned = props.pinned;
   }
 
   /**
@@ -84,14 +81,6 @@ export class Message {
   }
 
   /**
-   * Boolean whether the message is pinned or not
-   */
-
-  public get pinned(): boolean {
-    return this._pinned;
-  }
-
-  /**
    * Boolean wether the message can be edited or not
    *
    * Since only the creator of the message can edit the message the default value is false
@@ -101,19 +90,6 @@ export class Message {
 
   public get editable(): boolean {
     return this.sender === this.client.user.uuid;
-  }
-
-  /**
-   * Boolean wether the message can be pinned or not
-   *
-   * Since only admins can pin messages the default value is false
-   *
-   * @default false
-   */
-
-  public get pinnable(): boolean {
-    //TODO: Admins and permissions -> check for existing "pin" permission
-    return false;
   }
 
   /**
@@ -132,44 +108,6 @@ export class Message {
         actionUuid: actionUuid,
         message: this.uuid,
         text: text,
-      });
-      handleAction(this.client, actionUuid).then(resolve).catch(reject);
-    });
-  }
-
-  /**
-   * Pin the message
-   *
-   * @returns Promise<void>
-   */
-
-  public pin(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (this._pinned) reject('Message Is Already Pinned');
-      const actionUuid: string = v4();
-      this.client.socket.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
-        actionUuid: actionUuid,
-        message: this.uuid,
-        pinned: true,
-      });
-      handleAction(this.client, actionUuid).then(resolve).catch(reject);
-    });
-  }
-
-  /**
-   * Unpin the message
-   *
-   * @returns Promise<void>
-   */
-
-  public unpin(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!this._pinned) reject('Message Is Not Pinned');
-      const actionUuid: string = v4();
-      this.client.socket.chat.emit(ChatSocketEvent.MESSAGE_EDIT, {
-        actionUuid: actionUuid,
-        message: this.uuid,
-        pinned: false,
       });
       handleAction(this.client, actionUuid).then(resolve).catch(reject);
     });

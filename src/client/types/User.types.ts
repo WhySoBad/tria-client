@@ -62,11 +62,40 @@ export interface UserConstructor {
 }
 
 export interface UserPreview {
+  /**
+   * Uuid of the user
+   */
+
   uuid: string;
+
+  /**
+   * Name of the user
+   */
+
   name: string;
+
+  /**
+   * Unique tag of the user
+   */
+
   tag: string;
+
+  /**
+   * Description of the user
+   */
+
   description: string;
+
+  /**
+   * Color of the user
+   */
+
   color: string;
+
+  /**
+   * Avatar of the user
+   */
+
   avatarURL: string | null;
 }
 
