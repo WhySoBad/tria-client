@@ -156,20 +156,6 @@ export abstract class BaseClient extends SocketHandler {
   }
 
   /**
-   * Log the user out
-   *
-   * @returns Promise<void>
-   */
-
-  public logout(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!this.token) reject('No Token Provided');
-      else if (!this.connected) reject('Client Not Connected');
-      else this.disconnect().then(resolve).catch(reject);
-    });
-  }
-
-  /**
    * Delete the user
    *
    * @returns Promise<void>

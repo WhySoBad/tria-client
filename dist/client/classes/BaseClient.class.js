@@ -99,16 +99,6 @@ class BaseClient extends SocketHandler_class_1.SocketHandler {
                 .catch(reject);
         });
     }
-    logout() {
-        return new Promise((resolve, reject) => {
-            if (!this.token)
-                reject('No Token Provided');
-            else if (!this.connected)
-                reject('Client Not Connected');
-            else
-                this.disconnect().then(resolve).catch(reject);
-        });
-    }
     delete() {
         return new Promise((resolve, reject) => {
             if (!this.token)

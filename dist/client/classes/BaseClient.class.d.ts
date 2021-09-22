@@ -14,7 +14,6 @@ export declare abstract class BaseClient extends SocketHandler {
     disconnect(): Promise<void>;
     login(): Promise<string>;
     protected validate(): Promise<boolean>;
-    logout(): Promise<void>;
     delete(): Promise<void>;
     protected fetchUser(): Promise<ClientUser>;
     createPrivateChat(user: string): Promise<string>;
